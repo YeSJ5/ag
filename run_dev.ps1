@@ -1,6 +1,6 @@
 param(
     [switch]$InstallDependencies,
-    [int]$StartupTimeoutSeconds = 90
+    [int]$StartupTimeoutSeconds = 150
 )
 
 $ErrorActionPreference = 'Stop'
@@ -16,16 +16,23 @@ $redisErrorLog = Join-Path $env:TEMP 'airguard-redis-error.log'
 $workerLog = Join-Path $env:TEMP 'airguard-worker.log'
 $workerErrorLog = Join-Path $env:TEMP 'airguard-worker-error.log'
 
+try {
+    Add-Type -AssemblyName 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' -ErrorAction SilentlyContinue
+} catch {}
+try {
+    [System.Reflection.Assembly]::LoadWithPartialName('System.Net.Http') | Out-Null
+} catch {}
+try {
+    Add-Type -AssemblyName System.Net.Http -ErrorAction SilentlyContinue
+} catch {}
+
 function Get-ApiHealth {
     $client = $null
     $response = $null
     try {
-        Add-Type -AssemblyName System.Net.Http -ErrorAction SilentlyContinue
         $client = [System.Net.Http.HttpClient]::new()
         $client.Timeout = [TimeSpan]::FromSeconds(3)
         $response = $client.GetAsync('http://127.0.0.1:8001/health').GetAwaiter().GetResult()
-        # HttpClient returns the response for 503 as well as 200, so we can
-        # distinguish a degraded AirGuard API from an API that is not running.
         $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
         $payload = $body | ConvertFrom-Json -ErrorAction Stop
         if ($payload.service -ne 'AirGuard') { return $null }
@@ -35,7 +42,18 @@ function Get-ApiHealth {
             Redis = [string]$payload.redis
         }
     } catch {
-        return $null
+        # Fallback to Invoke-RestMethod if HttpClient is not available
+        try {
+            $payload = Invoke-RestMethod -Uri 'http://127.0.0.1:8001/health' -TimeoutSec 3 -ErrorAction Stop
+            if ($payload.service -ne 'AirGuard') { return $null }
+            return [pscustomobject]@{
+                StatusCode = 200
+                Database = [string]$payload.database
+                Redis = [string]$payload.redis
+            }
+        } catch {
+            return $null
+        }
     } finally {
         if ($response) { $response.Dispose() }
         if ($client) { $client.Dispose() }
@@ -66,17 +84,25 @@ function Test-AirGuardFrontend {
         $client = $null
         $response = $null
         try {
-            Add-Type -AssemblyName System.Net.Http -ErrorAction SilentlyContinue
             $client = [System.Net.Http.HttpClient]::new()
-            $client.Timeout = [TimeSpan]::FromSeconds(2)
+            $client.Timeout = [TimeSpan]::FromSeconds(5)
             $response = $client.GetAsync($url).GetAwaiter().GetResult()
-            if (-not $response.IsSuccessStatusCode) { continue }
-            $html = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
-            if ($html -match '(?i)<title>\s*AirGuard' -or $html -match '/@vite/client') {
-                return $true
+            if ($response.IsSuccessStatusCode) {
+                $html = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+                if ($html -match '(?i)<title>\s*AirGuard' -or $html -match '/@vite/client' -or $html -match 'id="root"') {
+                    return $true
+                }
             }
         } catch {
-            continue
+            # Fallback to Invoke-WebRequest
+            try {
+                $res = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+                if ($res.StatusCode -ge 200 -and $res.StatusCode -lt 400) {
+                    if ($res.Content -match '(?i)<title>\s*AirGuard' -or $res.Content -match '/@vite/client' -or $res.Content -match 'id="root"') {
+                        return $true
+                    }
+                }
+            } catch {}
         } finally {
             if ($response) { $response.Dispose() }
             if ($client) { $client.Dispose() }
@@ -245,9 +271,10 @@ if (-not $workerRunning -and $apiHealth.Redis -eq 'connected') {
         Pop-Location
     }
 
-    $workerDeadline = (Get-Date).AddSeconds(60)
+    $workerDeadline = (Get-Date).AddSeconds(90)
     $workerReady = $false
     while ((Get-Date) -lt $workerDeadline) {
+        if ($workerProcess -and $workerProcess.HasExited) { break }
         Push-Location $backendDir
         try {
             & $pythonExe -m app.worker --check-active *> $null
@@ -278,13 +305,14 @@ if (-not (Test-TcpPort -Port 5173)) {
     if (-not $npm) { $npm = Get-Command npm -ErrorAction SilentlyContinue }
     if (-not $npm) { throw 'Node.js/npm is required to start the frontend.' }
     Write-Host 'Starting Vite frontend...' -ForegroundColor Cyan
-    $null = Start-Process -FilePath $npm.Source `
+    $webProcess = Start-Process -FilePath $npm.Source `
         -ArgumentList @('run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort') `
         -WorkingDirectory $frontendDir -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput $webLog -RedirectStandardError $webErrorLog
-    $webDeadline = (Get-Date).AddSeconds(30)
+    $webDeadline = (Get-Date).AddSeconds([Math]::Max($StartupTimeoutSeconds, 120))
     while ((Get-Date) -lt $webDeadline -and -not (Test-AirGuardFrontend)) {
-        Start-Sleep -Milliseconds 300
+        if ($webProcess -and $webProcess.HasExited) { break }
+        Start-Sleep -Milliseconds 500
     }
     if (-not (Test-AirGuardFrontend)) {
         if (Test-Path $webErrorLog) { Get-Content $webErrorLog -Tail 30 }

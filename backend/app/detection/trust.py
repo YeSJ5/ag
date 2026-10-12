@@ -159,3 +159,360 @@ def classify_risk_pattern(history_points: list[dict[str, Any]]) -> str:
     if net_rise >= 0.20 or (values[-1] >= 0.65 and max_rise < 0.15):
         return "RISK_RISING"
     return "STABLE"
+
+
+# --- Next-Level Intelligence Functions ---
+
+
+def classify_telemetry_trust_state(
+    trust_score: float | None,
+    evidence_confidence: float | None = None,
+    assessment_status: str | None = None,
+) -> str:
+    """Classify overall telemetry trust state into formal analyst-grade categories.
+
+    Categories:
+    - 'INSUFFICIENT EVIDENCE': Accumulating history or unavailable detector layers (< 30% coverage).
+    - 'HIGH RISK': High anomaly risk or explicit critical rule violation (Trust < 40 or REVIEW_REQUIRED).
+    - 'SUSPICIOUS': Noticeable multi-signal anomaly or moderate model risk (Trust 40 - 69.9).
+    - 'WATCH': Minor kinematic drift or single low-weight anomaly flag (Trust 70 - 84.9).
+    - 'HIGH TRUST': Full or partial detector coverage with verified kinematic consistency (Trust >= 85).
+    """
+    if (
+        trust_score is None
+        or assessment_status == "INSUFFICIENT_EVIDENCE"
+        or (evidence_confidence is not None and evidence_confidence < 0.30)
+    ):
+        return "INSUFFICIENT EVIDENCE"
+
+    if assessment_status == "SUPPRESSED":
+        return "HIGH TRUST"
+
+    if trust_score < 40.0 or assessment_status == "REVIEW_REQUIRED":
+        return "HIGH RISK"
+    if trust_score < 70.0:
+        return "SUSPICIOUS"
+    if trust_score < 85.0:
+        return "WATCH"
+    return "HIGH TRUST"
+
+
+def compute_detector_agreement(
+    rule_flags: dict[str, bool] | None,
+    autoencoder_score: float | None,
+    ensemble_score: float | None,
+    receiver_consistency_score: float | None,
+    trust_score: float | None,
+) -> dict[str, Any]:
+    """Evaluate agreement across the 5 independent detection tiers.
+
+    Returns:
+      - 'layers': { 'kinematic_rules', 'autoencoder', 'ensemble', 'receiver_consistency', 'temporal_trust' }
+      - 'evaluating_count': int
+      - 'alerting_count': int
+      - 'passing_count': int
+      - 'agreement_ratio': float
+      - 'agreement_summary': str
+      - 'has_disagreement': bool
+    """
+    layers: dict[str, dict[str, Any]] = {}
+
+    # 1. Kinematic Rules
+    if rule_flags and isinstance(rule_flags, dict):
+        has_rule_alert = any(v is True for v in rule_flags.values())
+        layers["kinematic_rules"] = {
+            "status": "ALERT" if has_rule_alert else "PASS",
+            "score": 1.0 if has_rule_alert else 0.0,
+            "label": "Kinematic Physics Rules",
+            "details": f"{sum(1 for v in rule_flags.values() if v is True)} rule violations" if has_rule_alert else "Physics boundaries satisfied",
+        }
+    else:
+        layers["kinematic_rules"] = {
+            "status": "INSUFFICIENT_DATA",
+            "score": None,
+            "label": "Kinematic Physics Rules",
+            "details": "Insufficient history for delta rules",
+        }
+
+    # 2. PyTorch Autoencoder (Reconstruction Loss)
+    if autoencoder_score is not None:
+        ae_val = float(autoencoder_score)
+        ae_status = "ALERT" if ae_val >= 0.40 else ("WARN" if ae_val >= 0.20 else "PASS")
+        layers["autoencoder"] = {
+            "status": ae_status,
+            "score": round(ae_val, 4),
+            "label": "PyTorch Bottleneck Autoencoder",
+            "details": f"Reconstruction error {ae_val:.4f} ({ae_status})",
+        }
+    else:
+        layers["autoencoder"] = {
+            "status": "INSUFFICIENT_DATA",
+            "score": None,
+            "label": "PyTorch Bottleneck Autoencoder",
+            "details": "Accumulating rolling history (< 5 samples)",
+        }
+
+    # 3. Supervised Soft-Voting Ensemble (RF + GB)
+    if ensemble_score is not None:
+        ens_val = float(ensemble_score)
+        ens_status = "ALERT" if ens_val >= 0.50 else ("WARN" if ens_val >= 0.25 else "PASS")
+        layers["ensemble"] = {
+            "status": ens_status,
+            "score": round(ens_val, 4),
+            "label": "Supervised Ensemble (RF + GB)",
+            "details": f"Anomaly probability {ens_val * 100:.1f}%",
+        }
+    else:
+        layers["ensemble"] = {
+            "status": "INSUFFICIENT_DATA",
+            "score": None,
+            "label": "Supervised Ensemble (RF + GB)",
+            "details": "Model artifact offline or insufficient features",
+        }
+
+    # 4. Spatial / Receiver Consistency
+    if receiver_consistency_score is not None:
+        rc_val = float(receiver_consistency_score)
+        rc_status = "PASS" if rc_val >= 0.70 else ("WARN" if rc_val >= 0.40 else "ALERT")
+        layers["receiver_consistency"] = {
+            "status": rc_status,
+            "score": round(rc_val, 4),
+            "label": "Spatial Receiver Consistency",
+            "details": f"Receiver geometry consistency {rc_val * 100:.1f}%",
+        }
+    else:
+        layers["receiver_consistency"] = {
+            "status": "INSUFFICIENT_DATA",
+            "score": None,
+            "label": "Spatial Receiver Consistency",
+            "details": "Multi-receiver station sensor data not provided by feed",
+        }
+
+    # 5. Temporal Trust Engine
+    if trust_score is not None:
+        t_val = float(trust_score)
+        t_status = "PASS" if t_val >= 80.0 else ("WARN" if t_val >= 50.0 else "ALERT")
+        layers["temporal_trust"] = {
+            "status": t_status,
+            "score": round(t_val, 1),
+            "label": "Temporal Bayesian Trust",
+            "details": f"Telemetry trust index {t_val:.1f}%",
+        }
+    else:
+        layers["temporal_trust"] = {
+            "status": "INSUFFICIENT_DATA",
+            "score": None,
+            "label": "Temporal Bayesian Trust",
+            "details": "Trust score uncomputed",
+        }
+
+    active_layers = [l for l in layers.values() if l["status"] != "INSUFFICIENT_DATA"]
+    evaluating_count = len(active_layers)
+    alerting_count = sum(1 for l in active_layers if l["status"] in ("ALERT", "WARN"))
+    passing_count = sum(1 for l in active_layers if l["status"] == "PASS")
+
+    has_disagreement = evaluating_count >= 2 and alerting_count > 0 and passing_count > 0
+
+    if evaluating_count == 0:
+        agreement_summary = "Insufficient data across detectors"
+        agreement_ratio = 0.0
+    elif has_disagreement:
+        agreement_summary = f"{passing_count}/{evaluating_count} nominal vs {alerting_count}/{evaluating_count} flagged — Detector disagreement reduces assessment confidence"
+        agreement_ratio = round(max(passing_count, alerting_count) / evaluating_count, 2)
+    elif alerting_count > 0:
+        agreement_summary = f"{alerting_count}/{evaluating_count} detectors in agreement (Anomaly corroborated)"
+        agreement_ratio = 1.0
+    else:
+        agreement_summary = f"{evaluating_count}/{evaluating_count} detectors in agreement (Nominal verified)"
+        agreement_ratio = 1.0
+
+    return {
+        "layers": layers,
+        "evaluating_count": evaluating_count,
+        "alerting_count": alerting_count,
+        "passing_count": passing_count,
+        "agreement_ratio": agreement_ratio,
+        "agreement_summary": agreement_summary,
+        "has_disagreement": has_disagreement,
+    }
+
+
+def classify_evidence_quadrant(
+    state: dict[str, Any],
+    alert: dict[str, Any] | None = None,
+    assessment: dict[str, Any] | None = None,
+) -> dict[str, list[str]]:
+    """Classify investigation evidence into OBSERVED, DERIVED, MODEL-INFERRED, and UNKNOWN quadrants."""
+    lat = state.get("latitude")
+    lng = state.get("longitude")
+    alt = state.get("altitude_m")
+    vel = state.get("velocity_ms")
+    hdg = state.get("heading_deg")
+    vr = state.get("vertical_rate_ms")
+    source = state.get("source", "opensky")
+
+    observed = [
+        f"Transponder coordinates: ({lat:.4f}°, {lng:.4f}°)" if lat is not None and lng is not None else "Coordinates reported",
+        f"Barometric Altitude: {alt:.0f} m ({alt * 3.28084:.0f} ft)" if alt is not None else "Altitude reported",
+        f"Ground Velocity: {vel:.1f} m/s ({vel * 1.94384:.0f} kts)" if vel is not None else "Ground speed reported",
+        f"True Track Heading: {hdg:.1f}°" if hdg is not None else "Heading reported",
+        f"Vertical Rate: {vr:+.1f} m/s ({vr * 196.85:+.0f} ft/min)" if vr is not None else "Vertical rate reported",
+        f"Telemetry Ingestion Source: {source}",
+    ]
+
+    derived = []
+    if vel is not None and alt is not None:
+        alt_ft = alt * 3.28084
+        vel_kts = vel * 1.94384
+        derived.append(f"Kinematic regime: Cruise ({alt_ft:.0f} ft, {vel_kts:.0f} kts)" if alt_ft > 10000 else f"Low-altitude flight ({alt_ft:.0f} ft, {vel_kts:.0f} kts)")
+    if vr is not None:
+        derived.append(f"Climb vector: {vr * 196.85:+.0f} ft/min")
+
+    model_inferred = []
+    if assessment and isinstance(assessment, dict):
+        comb_risk = assessment.get("combined_risk_score")
+        if comb_risk is not None:
+            model_inferred.append(f"Combined Detector Risk: {comb_risk:.4f}")
+            model_inferred.append(f"Derived Telemetry Trust Score: {derive_trust_score(comb_risk)}%")
+        signals = assessment.get("signals", {})
+        if isinstance(signals, dict):
+            if signals.get("autoencoder_score") is not None:
+                model_inferred.append(f"Autoencoder Reconstruction Loss: {signals['autoencoder_score']:.4f}")
+            if signals.get("ensemble_score") is not None:
+                model_inferred.append(f"Ensemble Anomaly Probability: {signals['ensemble_score'] * 100:.1f}%")
+
+    if alert and isinstance(alert, dict):
+        reasons = alert.get("reason_text", "")
+        if reasons:
+            for r in reasons.split(";"):
+                if r.strip():
+                    model_inferred.append(f"Alert Trigger: {r.strip()}")
+
+    unknown = [
+        "Pilot navigation intent and flight deck FMC waypoints",
+        "Whether trajectory deviation originates from malicious spoofing vs avionics/GPS sensor multipath",
+        "Air traffic control tactical ATC radar vector directives",
+        "Localized high-altitude wind shear, jet stream turbulence, or atmospheric microbursts",
+    ]
+
+    return {
+        "observed": observed,
+        "derived": derived,
+        "model_inferred": model_inferred,
+        "unknown": unknown,
+    }
+
+
+def generate_why_assessment(
+    rule_flags: dict[str, bool] | None,
+    autoencoder_score: float | None,
+    ensemble_score: float | None,
+    trust_score: float | None,
+    alert_reason: str | None = None,
+) -> dict[str, Any]:
+    """Build structured 'WHY THIS AIRCRAFT?' breakdown separating what triggered vs what did not."""
+    triggered: list[str] = []
+    not_triggered: list[str] = []
+
+    # Check kinematic rules
+    rule_map = {
+        "positionJump": "Position jump exceeding civil kinematic envelope",
+        "position_jump": "Position jump exceeding civil kinematic envelope",
+        "climbRate": "Vertical climb/descent rate exceeding physical aircraft limits (> 8,000 ft/min)",
+        "climb_rate": "Vertical climb/descent rate exceeding physical aircraft limits (> 8,000 ft/min)",
+        "duplicateIcao": "Duplicate ICAO address reported from divergent spatial coordinates",
+        "duplicate_icao": "Duplicate ICAO address reported from divergent spatial coordinates",
+        "altVelMismatch": "Altitude and ground speed physically inconsistent",
+        "alt_vel_mismatch": "Altitude and ground speed physically inconsistent",
+        "lowSignalConfidence": "Low signal confidence with unverified position displacement",
+        "low_signal_confidence": "Low signal confidence with unverified position displacement",
+    }
+
+    if rule_flags:
+        for k, v in rule_flags.items():
+            name = rule_map.get(k, k)
+            if v is True:
+                triggered.append(f"Rule Triggered: {name}")
+            elif v is False:
+                not_triggered.append(f"Rule Nominal: {name}")
+
+    if not rule_flags:
+        not_triggered.append("Kinematic physics rules: All nominal within operational bounds")
+
+    # Autoencoder
+    if autoencoder_score is not None:
+        if autoencoder_score >= 0.30:
+            triggered.append(f"Autoencoder: Multivariate reconstruction residual spiked to {autoencoder_score:.4f}")
+        else:
+            not_triggered.append(f"Autoencoder: Normal kinematic latent pattern (residual {autoencoder_score:.4f} <= 0.30)")
+
+    # Ensemble
+    if ensemble_score is not None:
+        if ensemble_score >= 0.50:
+            triggered.append(f"Supervised Ensemble: Anomaly probability reached {ensemble_score * 100:.1f}%")
+        else:
+            not_triggered.append(f"Supervised Ensemble: Nominal classification (anomaly probability {ensemble_score * 100:.1f}% < 50%)")
+
+    # Trust Score
+    if trust_score is not None:
+        if trust_score < 70.0:
+            triggered.append(f"Trust Engine: Telemetry trust degraded to {trust_score:.1f}%")
+        else:
+            not_triggered.append(f"Trust Engine: Telemetry trust sustained at {trust_score:.1f}%")
+
+    if alert_reason and alert_reason not in triggered:
+        triggered.append(f"Flagged Condition: {alert_reason}")
+
+    summary = (
+        f"{len(triggered)} anomaly signals triggered; {len(not_triggered)} nominal checks verified."
+        if triggered
+        else "All telemetry integrity checks nominal. No anomalous kinematic deviations observed."
+    )
+
+    return {
+        "triggered_reasons": triggered,
+        "non_triggered_reasons": not_triggered,
+        "summary": summary,
+    }
+
+
+def generate_alert_counter_evidence(
+    rule_flags: list[str] | None,
+    combined_risk: float | None,
+    ensemble_score: float | None,
+    autoencoder_score: float | None,
+) -> list[str]:
+    """Generate objective counter-evidence explaining why an alert may NOT represent a malicious threat."""
+    counter_reasons = []
+
+    if ensemble_score is not None and ensemble_score < 0.40:
+        counter_reasons.append(
+            "Supervised Ensemble ML model did not corroborate malicious spoofing pattern (predicted probability < 40%)."
+        )
+
+    if autoencoder_score is not None and autoencoder_score < 0.20:
+        counter_reasons.append(
+            "Autoencoder reconstruction loss is within normal operational noise bounds."
+        )
+
+    if rule_flags and len(rule_flags) == 1:
+        single_rule = rule_flags[0]
+        if "climb" in single_rule.lower():
+            counter_reasons.append(
+                "High vertical rate may reflect valid emergency descent, TCAS resolution advisory, or military combat departure."
+            )
+        elif "jump" in single_rule.lower():
+            counter_reasons.append(
+                "Position displacement may be caused by ground receiver handoff delay, temporary ADS-B transponder packet loss, or NTP clock desync."
+            )
+        elif "duplicate" in single_rule.lower():
+            counter_reasons.append(
+                "Duplicate ICAO may result from transponder maintenance squawk testing or ground station repeater echoing."
+            )
+
+    counter_reasons.append(
+        "Surveillance feed latency or intermittent upstream state-vector packet drop may cause artificial kinematic jumps."
+    )
+
+    return counter_reasons
+

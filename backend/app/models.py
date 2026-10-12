@@ -77,9 +77,15 @@ class Alert(Base):
     acknowledged: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false"
     )
+    status: Mapped[str] = mapped_column(
+        String(20), default="NEW", server_default="NEW", index=True
+    )
 
     # Relationships
     aircraft_state: Mapped["AircraftState"] = relationship(back_populates="alerts")
+    transitions: Mapped[list["AlertTransition"]] = relationship(
+        back_populates="alert", cascade="all, delete-orphan", order_by="AlertTransition.created_at"
+    )
 
 
 class AircraftAssessment(Base):
@@ -277,3 +283,75 @@ class FlightRoute(Base):
     __table_args__ = (
         Index("idx_flight_routes_icao_session", "icao24", "session_id", unique=True),
     )
+
+
+class AlertTransition(Base):
+    """Immutable transition audit record for alert lifecycle states."""
+
+    __tablename__ = "alert_transitions"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    alert_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("alerts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    user_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    user_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    previous_status: Mapped[str] = mapped_column(String(20), nullable=False)
+    new_status: Mapped[str] = mapped_column(String(20), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    alert: Mapped[Alert] = relationship(back_populates="transitions")
+
+
+class WatchlistItem(Base):
+    """Analyst-monitored priority aircraft watchlist."""
+
+    __tablename__ = "watchlist_items"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    icao24: Mapped[str] = mapped_column(String(6), nullable=False, index=True)
+    callsign: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    priority: Mapped[str] = mapped_column(
+        String(20), default="NORMAL", server_default="NORMAL"
+    )  # LOW, NORMAL, HIGH, CRITICAL
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    __table_args__ = (
+        Index("uq_watchlist_user_icao", "user_id", "icao24", unique=True),
+    )
+
+
+class AnalystNote(Base):
+    """Analyst qualitative notes attached to aircraft, alerts, investigations, or events."""
+
+    __tablename__ = "analyst_notes"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    target_type: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    target_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    author_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    author_email: Mapped[str] = mapped_column(String(255), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+

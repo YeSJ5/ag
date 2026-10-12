@@ -78,7 +78,7 @@ async def trace_aircraft():
         print(f"  Obs #{idx:02d}: Time={obs.received_at} | Lat={obs.latitude:8.4f}, Lon={obs.longitude:9.4f} | "
               f"Alt={obs.altitude_m:6.0f}m ({round(obs.altitude_m*3.28084):5d}ft) | "
               f"Spd={obs.velocity_ms:5.1f}m/s ({round(obs.velocity_ms*1.94384):3d}kt) | "
-              f"Hdg={obs.heading_deg:5.1f}° | VRate={obs.vertical_rate_ms:5.1f}m/s | NIC={obs.reported_nic}")
+              f"Hdg={obs.heading_deg:5.1f} deg | VRate={obs.vertical_rate_ms:5.1f}m/s | NIC={obs.reported_nic}")
 
     # 2. Physics / Rule Evaluation
     print(f"\n[3] Physics Rules Evaluation:")
@@ -103,10 +103,10 @@ async def trace_aircraft():
         )
 
         rule_list = [is_jump, False, is_climb, is_alt_vel, is_low_sig, None]
-        print(f"  ✓ Position Displacement Consistency: {'PASS (No Jump)' if not is_jump else 'FLAGGED: ' + str(jump_reason)}")
-        print(f"  ✓ Climb-Rate Physical Boundaries:   {'PASS (Nominal)' if not is_climb else 'FLAGGED: ' + str(climb_reason)}")
-        print(f"  ✓ Altitude/Velocity Consistency:    {'PASS (Nominal)' if not is_alt_vel else 'FLAGGED: ' + str(alt_vel_reason)}")
-        print(f"  — Signal Confidence (NIC):          {is_low_sig if is_low_sig is not None else 'UNAVAILABLE from source (not penalized)'}")
+        print(f"  [PASS] Position Displacement:    {'PASS (No Jump)' if not is_jump else 'FLAGGED: ' + str(jump_reason)}")
+        print(f"  [PASS] Climb-Rate Boundaries:    {'PASS (Nominal)' if not is_climb else 'FLAGGED: ' + str(climb_reason)}")
+        print(f"  [PASS] Alt/Velocity Consistency: {'PASS (Nominal)' if not is_alt_vel else 'FLAGGED: ' + str(alt_vel_reason)}")
+        print(f"  [INFO] Signal Confidence (NIC):  {is_low_sig if is_low_sig is not None else 'UNAVAILABLE from source (not penalized)'}")
     else:
         rule_list = [None, None, None, None, None, None]
         print("  Insufficient historical observations for differential rule evaluation.")
@@ -116,20 +116,20 @@ async def trace_aircraft():
     # Layer 1: Rules
     evaluated_rules = [f for f in rule_list[:4] if f is not None]
     rule_risk = 1.0 if any(evaluated_rules) else 0.0
-    print(f"  • Physics Rules Layer:       AVAILABLE (Evaluated risk: {rule_risk:.2f})")
+    print(f"  - Physics Rules Layer:       AVAILABLE (Evaluated risk: {rule_risk:.2f})")
 
     # Layer 2: Autoencoder Kinematic Reconstruction
     autoencoder = UnsupervisedAutoencoder()
     ae_score = 0.045 if autoencoder.is_available or len(observations) >= 5 else None
-    print(f"  • Autoencoder Anomaly Layer: {'AVAILABLE (Score: ' + str(ae_score) + ')' if ae_score is not None else 'UNAVAILABLE (Accumulating history)'}")
+    print(f"  - Autoencoder Anomaly Layer: {'AVAILABLE (Score: ' + str(ae_score) + ')' if ae_score is not None else 'UNAVAILABLE (Accumulating history)'}")
 
     # Layer 3: Supervised Ensemble (Requires 9 full features; cleanly omitted if missing NIC)
     ensemble_score = None
-    print(f"  • Supervised Ensemble Layer: UNAVAILABLE (Cleanly omitted: unassessed NIC not fabricated)")
+    print(f"  - Supervised Ensemble Layer: UNAVAILABLE (Cleanly omitted: unassessed NIC not fabricated)")
 
     # Layer 4: Receiver / Multilateration Consistency
     receiver_score = None
-    print(f"  • Receiver Consistency:      UNAVAILABLE (No calibrated receiver network for this sector)")
+    print(f"  - Receiver Consistency:      UNAVAILABLE (No calibrated receiver network for this sector)")
 
     # 4. Canonical Combination & Trust Derivation
     print(f"\n[5] Evidence-Aware Combination & Canonical Derivation:")
@@ -160,13 +160,13 @@ async def trace_aircraft():
         status = "INSUFFICIENT_EVIDENCE"
         unavailable_reasons = ["Accumulating baseline observation history"]
 
-    print(f"  • Combined Detector Risk:   {combined_risk} (Scale: 0.00 - 1.00)")
-    print(f"  • Telemetry Trust Index:    {trust_score} / 100 (Derived canonically: (1.0 - Risk) * 100)")
-    print(f"  • Evidence Confidence:      {round(evidence_confidence * 100)}% (Available detector weight: {total_available_weight:.2f} / 1.00)")
-    print(f"  • Assessment Status:        {status}")
-    print(f"  • Unavailable Reasons:")
+    print(f"  - Combined Detector Risk:   {combined_risk} (Scale: 0.00 - 1.00)")
+    print(f"  - Telemetry Trust Index:    {trust_score} / 100 (Derived canonically: (1.0 - Risk) * 100)")
+    print(f"  - Evidence Confidence:      {round(evidence_confidence * 100)}% (Available detector weight: {total_available_weight:.2f} / 1.00)")
+    print(f"  - Assessment Status:        {status}")
+    print(f"  - Unavailable Reasons:")
     for reason in unavailable_reasons:
-        print(f"      - {reason}")
+        print(f"      * {reason}")
 
     # 5. Output Verification Payload JSON
     summary = {

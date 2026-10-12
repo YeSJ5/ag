@@ -55,6 +55,211 @@ class DetectionService:
     def get_latest_score(self, icao24: str) -> dict[str, Any] | None:
         return self.latest_scores.get(icao24)
 
+    def evaluate_record_instant(self, record: dict[str, Any]) -> dict[str, Any]:
+        """Synchronously evaluates physical rules and available ML models on a flight record.
+        Populates self.latest_scores[icao24] and returns the computed score entry."""
+        if self._uses_shared_rule_config:
+            self.rule_config = active_rule_config
+        icao24 = str(record.get("icao24", ""))
+        if not icao24:
+            return {}
+
+        prev_history = self.history.get(icao24, [])
+        prev_record = prev_history[0] if prev_history else None
+
+        is_suppressed = record.get("metadata", {}).get("is_known_entity", False)
+        known_label = record.get("metadata", {}).get("known_entity_label")
+
+        quality = record.get("data_quality", {})
+        observed = set(quality.get("observed_fields", []))
+        if not observed:
+            if record.get("vertical_rate_ms") is not None:
+                observed.add("vertical_rate")
+            if record.get("altitude_m") is not None:
+                observed.add("altitude")
+            if record.get("velocity_ms") is not None:
+                observed.add("velocity")
+            if record.get("heading_deg") is not None:
+                observed.add("heading")
+            if record.get("on_ground") is not None:
+                observed.add("on_ground")
+
+        rule_climb = None
+        if "vertical_rate" in observed and record.get("vertical_rate_ms") is not None:
+            rule_climb, _, _ = check_impossible_climb_rate(
+                record["vertical_rate_ms"], self.rule_config
+            )
+
+        rule_alt_vel = None
+        if record.get("on_ground") is True:
+            alt = float(record.get("altitude_m") if record.get("altitude_m") is not None else 0.0)
+            vel = float(record.get("velocity_ms") if record.get("velocity_ms") is not None else 0.0)
+            rule_alt_vel, _, _ = check_altitude_velocity_mismatch(
+                alt,
+                vel,
+                True,
+                self.rule_config,
+            )
+        elif (
+            {"altitude", "velocity", "on_ground"}.issubset(observed)
+            or (
+                record.get("altitude_m") is not None
+                and record.get("velocity_ms") is not None
+                and record.get("on_ground") is not None
+            )
+        ):
+            rule_alt_vel, _, _ = check_altitude_velocity_mismatch(
+                float(record["altitude_m"]),
+                float(record["velocity_ms"]),
+                bool(record["on_ground"]),
+                self.rule_config,
+            )
+
+        rule_jump = None
+        rec_dt = record.get("received_at")
+        if isinstance(rec_dt, str):
+            try:
+                rec_dt = datetime.fromisoformat(rec_dt.replace("Z", "+00:00"))
+            except Exception:
+                rec_dt = None
+
+        prev_dt = prev_record.get("received_at") if prev_record else None
+        if isinstance(prev_dt, str):
+            try:
+                prev_dt = datetime.fromisoformat(prev_dt.replace("Z", "+00:00"))
+            except Exception:
+                prev_dt = None
+
+        if prev_record and rec_dt and prev_dt and record.get("latitude") is not None and record.get("longitude") is not None:
+            rule_jump, _, _ = check_position_jump(
+                current_lat=record["latitude"],
+                current_lon=record["longitude"],
+                current_time=rec_dt,
+                prev_lat=prev_record["latitude"],
+                prev_lon=prev_record["longitude"],
+                prev_time=prev_dt,
+                config=self.rule_config,
+            )
+
+        rule_dup = None
+        rule_low_signal = None
+        reported_nic = record.get("reported_nic")
+        if reported_nic is not None and record.get("latitude") is not None and record.get("longitude") is not None:
+            rule_low_signal, _, _ = check_low_signal_confidence(
+                reported_nic=reported_nic,
+                current_lat=record["latitude"],
+                current_lon=record["longitude"],
+                prev_lat=prev_record["latitude"] if prev_record else None,
+                prev_lon=prev_record["longitude"] if prev_record else None,
+                config=self.rule_config,
+            )
+
+        rule_flags = [rule_jump, rule_dup, rule_climb, rule_alt_vel, rule_low_signal]
+
+        # Check rolling kinematic window for ML models
+        states = [record] + prev_history[:4]
+        def _has_kinematics(s: dict[str, Any]) -> bool:
+            return (
+                s.get("velocity_ms") is not None
+                and s.get("heading_deg") is not None
+                and s.get("vertical_rate_ms") is not None
+            )
+
+        complete_window = len(states) >= 5 and all(_has_kinematics(s) for s in states)
+        speed_var = heading_var = alt_rate_var = time_diff = None
+        if complete_window:
+            speeds = [s["velocity_ms"] for s in states if s.get("velocity_ms") is not None]
+            headings = [s["heading_deg"] for s in states if s.get("heading_deg") is not None]
+            vert_rates = [s["vertical_rate_ms"] for s in states if s.get("vertical_rate_ms") is not None]
+            if len(speeds) >= 5 and len(headings) >= 5 and len(vert_rates) >= 5:
+                speed_var = float(np.var(speeds))
+                heading_var = float(np.var(headings))
+                alt_rate_var = float(np.var(vert_rates))
+                if prev_record and prev_dt and rec_dt:
+                    time_diff = max(0.1, (rec_dt - prev_dt).total_seconds())
+
+        ae_score = None
+        if self.autoencoder is not None and speed_var is not None and time_diff is not None:
+            try:
+                ae_features = np.array([speed_var, heading_var, alt_rate_var, time_diff])
+                ae_score = self.autoencoder.compute_anomaly_score(ae_features)
+            except Exception:
+                ae_score = None
+
+        ensemble_score = None
+        if self.ensemble is not None and speed_var is not None and time_diff is not None:
+            try:
+                r_jump = float(rule_jump) if rule_jump is not None else 0.0
+                r_dup = float(rule_dup) if rule_dup is not None else 0.0
+                r_climb = float(rule_climb) if rule_climb is not None else 0.0
+                r_alt_vel = float(rule_alt_vel) if rule_alt_vel is not None else 0.0
+                r_low_sig = float(rule_low_signal) if rule_low_signal is not None else 0.0
+                feature_vector = np.array([
+                    speed_var, heading_var, alt_rate_var, time_diff,
+                    r_jump, r_dup, r_climb, r_alt_vel, r_low_sig
+                ])
+                ensemble_score, _ = self.ensemble.predict_anomaly(feature_vector)
+            except Exception:
+                ensemble_score = None
+
+        sensors = record.get("sensors") or []
+        trilateration_score = None
+        if sensors and record.get("latitude") is not None and record.get("longitude") is not None:
+            try:
+                trilateration_score, _, _ = check_trilateration_plausibility(
+                    record["latitude"], record["longitude"], sensors
+                )
+            except Exception:
+                trilateration_score = None
+
+        combined_risk_score, is_alert_triggered = combine_scores(
+            rule_flags=rule_flags,
+            ensemble_score=ensemble_score,
+            autoencoder_score=ae_score,
+            trilateration_consistency=trilateration_score,
+            threshold=0.65,
+        )
+        evidence_confidence, unavailable_reasons = compute_evidence_confidence(
+            rule_flags=rule_flags,
+            ensemble_score=ensemble_score,
+            autoencoder_score=ae_score,
+            trilateration_consistency=trilateration_score,
+        )
+        trust_val = derive_trust_score(combined_risk_score)
+
+        if is_suppressed:
+            assessment_status = "SUPPRESSED"
+        elif is_alert_triggered:
+            assessment_status = "REVIEW_REQUIRED"
+        elif combined_risk_score is not None:
+            if (
+                ensemble_score is not None
+                and ae_score is not None
+                and trilateration_score is not None
+                and all(f is not None for f in rule_flags)
+            ):
+                assessment_status = "ASSESSED"
+            else:
+                assessment_status = "PARTIALLY_ASSESSED"
+        else:
+            assessment_status = "INSUFFICIENT_EVIDENCE"
+
+        score_entry = {
+            "ensemble_score": ensemble_score,
+            "autoencoder_score": ae_score,
+            "receiver_consistency_score": trilateration_score,
+            "combined_risk_score": combined_risk_score,
+            "trust_score": trust_val,
+            "evidence_confidence": evidence_confidence,
+            "rule_assessment_coverage": round(
+                sum(flag is not None for flag in rule_flags) / len(rule_flags), 2
+            ),
+            "assessment_status": assessment_status,
+            "unavailable_reasons": unavailable_reasons,
+        }
+        self.latest_scores[icao24] = score_entry
+        return score_entry
+
     async def start_detection_loop(self) -> None:
         """Continuously pulls normalized flight vectors from the Redis Stream consumer group."""
         import os
@@ -297,13 +502,33 @@ class DetectionService:
         with tracer.start_as_current_span("evaluate_rules") as span:
             quality = record.get("data_quality", {})
             observed = set(quality.get("observed_fields", []))
+            if not observed:
+                if record.get("vertical_rate_ms") is not None:
+                    observed.add("vertical_rate")
+                if record.get("altitude_m") is not None:
+                    observed.add("altitude")
+                if record.get("velocity_ms") is not None:
+                    observed.add("velocity")
+                if record.get("heading_deg") is not None:
+                    observed.add("heading")
+                if record.get("on_ground") is not None:
+                    observed.add("on_ground")
+
             rule_climb, climb_reason, climb_evidence = (None, None, {})
             if "vertical_rate" in observed:
                 rule_climb, climb_reason, climb_evidence = check_impossible_climb_rate(
                     record["vertical_rate_ms"], self.rule_config
                 )
             rule_alt_vel, alt_vel_reason, alt_vel_evidence = (None, None, {})
-            if {"altitude", "velocity", "on_ground"}.issubset(observed):
+            if record.get("on_ground") is True:
+                alt = float(record.get("altitude_m") if record.get("altitude_m") is not None else 0.0)
+                vel = float(record.get("velocity_ms") if record.get("velocity_ms") is not None else 0.0)
+                rule_alt_vel, alt_vel_reason, alt_vel_evidence = (
+                    check_altitude_velocity_mismatch(
+                        alt, vel, True, self.rule_config
+                    )
+                )
+            elif {"altitude", "velocity", "on_ground"}.issubset(observed):
                 rule_alt_vel, alt_vel_reason, alt_vel_evidence = (
                     check_altitude_velocity_mismatch(
                         record["altitude_m"],
@@ -363,17 +588,23 @@ class DetectionService:
 
         # Calculate Rolling Window Features
         states = [record] + prev_history[:4]
-        complete_window = len(states) >= 5 and all(
-            {"velocity", "heading", "vertical_rate"}.issubset(
-                set(s.get("data_quality", {}).get("observed_fields", []))
-            )
-            for s in states
-        )
-        speeds = [s["velocity_ms"] for s in states]
-        headings = [s["heading_deg"] for s in states]
-        vert_rates = [s["vertical_rate_ms"] for s in states]
 
-        if complete_window:
+        def _has_kinematics(s: dict[str, Any]) -> bool:
+            obs = set(s.get("data_quality", {}).get("observed_fields", []))
+            if {"velocity", "heading", "vertical_rate"}.issubset(obs):
+                return True
+            return (
+                s.get("velocity_ms") is not None
+                and s.get("heading_deg") is not None
+                and s.get("vertical_rate_ms") is not None
+            )
+
+        complete_window = len(states) >= 5 and all(_has_kinematics(s) for s in states)
+        speeds = [s["velocity_ms"] for s in states if s.get("velocity_ms") is not None]
+        headings = [s["heading_deg"] for s in states if s.get("heading_deg") is not None]
+        vert_rates = [s["vertical_rate_ms"] for s in states if s.get("vertical_rate_ms") is not None]
+
+        if complete_window and len(speeds) >= 5 and len(headings) >= 5 and len(vert_rates) >= 5:
             speed_var = float(np.var(speeds))
             heading_var = float(np.var(headings))
             alt_rate_var = float(np.var(vert_rates))
@@ -398,10 +629,9 @@ class DetectionService:
 
         # 1. Evaluate Unsupervised Autoencoder independently when rolling kinematics exist
         if (
-            settings.ENABLE_LIVE_ML
+            self.autoencoder is not None
             and speed_var is not None
             and time_diff is not None
-            and self.autoencoder is not None
         ):
             ae_start = time.perf_counter()
             with tracer.start_as_current_span("evaluate_autoencoder"):
@@ -417,43 +647,43 @@ class DetectionService:
                 "Autoencoder unassessed: requires 5+ consecutive kinematic observations"
             )
 
-        # 2. Evaluate Supervised Ensemble when its required features (kinematics + all rules) exist
+        # 2. Evaluate Supervised Ensemble when rolling kinematics exist
         if (
-            settings.ENABLE_LIVE_ML
+            self.ensemble is not None
             and speed_var is not None
             and time_diff is not None
-            and all(flag is not None for flag in rule_flags)
         ):
+            r_jump = float(rule_jump) if rule_jump is not None else 0.0
+            r_dup = float(rule_dup) if rule_dup is not None else 0.0
+            r_climb = float(rule_climb) if rule_climb is not None else 0.0
+            r_alt_vel = float(rule_alt_vel) if rule_alt_vel is not None else 0.0
+            r_low_sig = float(rule_low_signal) if rule_low_signal is not None else 0.0
+
             feature_vector = np.array(
                 [
                     speed_var,
                     heading_var,
                     alt_rate_var,
                     time_diff,
-                    float(rule_jump),
-                    float(rule_dup),
-                    float(rule_climb),
-                    float(rule_alt_vel),
-                    float(rule_low_signal),
+                    r_jump,
+                    r_dup,
+                    r_climb,
+                    r_alt_vel,
+                    r_low_sig,
                 ]
             )
-            if self.ensemble is not None:
-                ensemble_start = time.perf_counter()
-                with tracer.start_as_current_span("evaluate_ensemble"):
-                    ensemble_score, shap_explanation = self.ensemble.predict_anomaly(
-                        feature_vector
-                    )
-                PIPELINE_STAGE_LATENCY.labels(stage="ensemble").observe(
-                    time.perf_counter() - ensemble_start
+            ensemble_start = time.perf_counter()
+            with tracer.start_as_current_span("evaluate_ensemble"):
+                ensemble_score, shap_explanation = self.ensemble.predict_anomaly(
+                    feature_vector
                 )
+            PIPELINE_STAGE_LATENCY.labels(stage="ensemble").observe(
+                time.perf_counter() - ensemble_start
+            )
         elif self.ensemble is not None:
             if speed_var is None or time_diff is None:
                 unavailable_reasons.append(
                     "ML Ensemble unassessed: requires rolling kinematic history"
-                )
-            elif any(flag is None for flag in rule_flags):
-                unavailable_reasons.append(
-                    "ML Ensemble unassessed: feature vector incomplete (missing NIC/duplicate rule evidence)"
                 )
 
         # 3. Trilateration / Receiver Consistency check
@@ -502,7 +732,7 @@ class DetectionService:
             trilateration_consistency=trilateration_score,
             threshold=0.65,
         )
-        evidence_confidence = compute_evidence_confidence(
+        evidence_confidence, unavailable_reasons = compute_evidence_confidence(
             rule_flags=rule_flags,
             ensemble_score=ensemble_score,
             autoencoder_score=ae_score,
@@ -546,7 +776,7 @@ class DetectionService:
             "alert_triggered": bool(is_alert_triggered and not is_suppressed),
         }
 
-        self.latest_scores[icao24] = {
+        score_entry = {
             "ensemble_score": ensemble_score,
             "autoencoder_score": ae_score,
             "receiver_consistency_score": trilateration_score,
@@ -559,6 +789,12 @@ class DetectionService:
             "assessment_status": assessment_status,
             "unavailable_reasons": unavailable_reasons,
         }
+        self.latest_scores[icao24] = score_entry
+        try:
+            from app.core.redis import redis_client
+            await redis_client.hset("airguard:latest_scores", icao24, json.dumps(score_entry))
+        except Exception:
+            pass
         logger.debug(
             f"[SCORE_EVAL] {icao24} ({record.get('callsign')}): "
             f"Ensemble={ensemble_score if ensemble_score is not None else 'UNAVAILABLE'}, "

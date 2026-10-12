@@ -841,6 +841,25 @@ class OpenSkyIngestionService:
             logger.debug("Could not invalidate shared aircraft snapshot cache: %s", exc)
         await self._broadcast_refresh_state(snapshot_replaced=True)
 
+        # Immediate instantaneous physical rule evaluation for all snapshot records
+        if self.detection_service:
+            score_map = {}
+            for rec in normalized_records:
+                try:
+                    s_entry = self.detection_service.evaluate_record_instant(rec)
+                    if s_entry and rec.get("icao24"):
+                        score_map[str(rec["icao24"])] = json.dumps(s_entry)
+                except Exception as eval_exc:
+                    logger.debug("Instant evaluation skipped for record: %s", eval_exc)
+            if score_map and redis_available:
+                try:
+                    score_pipe = redis_client.pipeline(transaction=False)
+                    for k, v in score_map.items():
+                        score_pipe.hset("airguard:latest_scores", k, v)
+                    await score_pipe.execute()
+                except Exception as score_err:
+                    logger.debug("Could not write latest_scores to Redis: %s", score_err)
+
         # Batch stream writes so a global snapshot does not require one Redis
         # network round trip per aircraft. Transactional chunks make the
         # fallback boundary explicit if a later chunk cannot be queued.
@@ -858,7 +877,10 @@ class OpenSkyIngestionService:
                         ].isoformat()
                     payload_data = {"record": state_data, "trace_carrier": {}}
                     pipeline.xadd(
-                        "airguard:telemetry", {"payload": json.dumps(payload_data)}
+                        "airguard:telemetry",
+                        {"payload": json.dumps(payload_data)},
+                        maxlen=10000,
+                        approximate=True,
                     )
                 try:
                     await pipeline.execute()

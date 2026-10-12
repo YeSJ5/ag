@@ -236,3 +236,156 @@ export const deleteAdminUser = async (id: number): Promise<{ status: 'deleted' }
   if (!res.ok) throw new Error(`Failed to delete user: ${res.statusText}`);
   return res.json();
 };
+
+// --- Next-Level Intelligence & Investigation Services ---
+
+export const fetchAircraftDelta = async (icao24: string, baselineSeconds = 30): Promise<import('../types').AircraftDelta> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/aircraft/${icao24}/delta?baseline_seconds=${baselineSeconds}`);
+  if (!res.ok) throw new Error(`Failed to fetch delta for ${icao24}: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchAircraftNarrative = async (icao24: string, limit = 50): Promise<import('../types').AircraftNarrative> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/aircraft/${icao24}/narrative?limit=${limit}`);
+  if (!res.ok) throw new Error(`Failed to fetch narrative for ${icao24}: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchAirspaceCorrelation = async (
+  icao24: string,
+  radiusKm = 150,
+  windowMinutes = 30,
+): Promise<import('../types').AirspaceCorrelation> => {
+  const res = await fetchWithAuth(
+    `${API_BASE}/api/v1/airspace/correlation/${icao24}?radius_km=${radiusKm}&window_minutes=${windowMinutes}`,
+  );
+  if (!res.ok) throw new Error(`Failed to fetch airspace correlation for ${icao24}: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchAirspaceRiskGrid = async (
+  windowMinutes = 30,
+  gridStepDeg = 4.0,
+): Promise<import('../types').AirspaceRiskGrid> => {
+  const res = await fetchWithAuth(
+    `${API_BASE}/api/v1/airspace/risk-grid?window_minutes=${windowMinutes}&grid_step_deg=${gridStepDeg}`,
+  );
+  if (!res.ok) throw new Error(`Failed to fetch risk grid: ${res.statusText}`);
+  return res.json();
+};
+
+export const compareAircraft = async (icaoA: string, icaoB: string): Promise<import('../types').AircraftComparison> => {
+  const res = await fetchWithAuth(
+    `${API_BASE}/api/v1/aircraft/compare?icao_a=${encodeURIComponent(icaoA)}&icao_b=${encodeURIComponent(icaoB)}`,
+  );
+  if (!res.ok) throw new Error(`Failed to compare aircraft ${icaoA} and ${icaoB}: ${res.statusText}`);
+  return res.json();
+};
+
+export const updateAlertStatus = async (
+  id: number | string,
+  status: 'NEW' | 'ACKNOWLEDGED' | 'INVESTIGATING' | 'RESOLVED' | 'DISMISSED',
+  notes?: string,
+): Promise<AlertLog> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/alerts/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, notes }),
+  });
+  if (!res.ok) throw new Error(`Failed to update alert ${id} status: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchWatchlist = async (): Promise<import('../types').WatchlistItem[]> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/watchlist`);
+  if (!res.ok) throw new Error(`Failed to fetch watchlist: ${res.statusText}`);
+  return res.json();
+};
+
+export const addToWatchlist = async (payload: {
+  icao24: string;
+  callsign?: string;
+  priority?: string;
+  notes?: string;
+}): Promise<import('../types').WatchlistItem> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/watchlist`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || 'Failed to add to watchlist');
+  }
+  return res.json();
+};
+
+export const removeFromWatchlist = async (icao24: string): Promise<{ status: string; icao24: string }> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/watchlist/${icao24}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error(`Failed to remove ${icao24} from watchlist: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchAnalystNotes = async (
+  targetType: 'aircraft' | 'alert' | 'event' | 'case',
+  targetId: string,
+): Promise<import('../types').AnalystNote[]> => {
+  const res = await fetchWithAuth(
+    `${API_BASE}/api/v1/notes?target_type=${encodeURIComponent(targetType)}&target_id=${encodeURIComponent(targetId)}`,
+  );
+  if (!res.ok) throw new Error(`Failed to fetch analyst notes: ${res.statusText}`);
+  return res.json();
+};
+
+export const createAnalystNote = async (payload: {
+  target_type: 'aircraft' | 'alert' | 'event' | 'case';
+  target_id: string;
+  content: string;
+}): Promise<import('../types').AnalystNote> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/notes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Failed to create analyst note: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchSourceHealthDetail = async (): Promise<import('../types').SourceHealthDetail> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/sources/health`);
+  if (!res.ok) throw new Error(`Failed to fetch source health: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchDataQualityMetrics = async (): Promise<import('../types').DataQualityMetrics> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/data-quality`);
+  if (!res.ok) throw new Error(`Failed to fetch data quality metrics: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchModelsMetadata = async (): Promise<import('../types').ModelMetadata> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/models/metadata`);
+  if (!res.ok) throw new Error(`Failed to fetch model metadata: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchAblationStudy = async (): Promise<import('../types').AblationStudy> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/models/ablation`);
+  if (!res.ok) throw new Error(`Failed to fetch ablation study: ${res.statusText}`);
+  return res.json();
+};
+
+export const fetchPipelineLatency = async (): Promise<import('../types').PipelineLatency> => {
+  const res = await fetchWithAuth(`${API_BASE}/api/v1/system/latency`);
+  if (!res.ok) throw new Error(`Failed to fetch pipeline latency: ${res.statusText}`);
+  return res.json();
+};
+
+export const getInvestigationReportUrl = (icao24: string): string => {
+  const token = getAuthToken();
+  const url = `${API_BASE}/api/v1/reports/investigation/${encodeURIComponent(icao24)}`;
+  return token ? `${url}?token=${encodeURIComponent(token)}` : url;
+};
+

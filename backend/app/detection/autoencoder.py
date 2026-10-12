@@ -146,16 +146,38 @@ def compute_evidence_confidence(
     ensemble_score: float | None,
     autoencoder_score: float | None,
     trilateration_consistency: float | None,
-) -> float:
+) -> tuple[float, list[str]]:
     """Computes evidence confidence/coverage as the proportion of the intended evidence stack available."""
     assessed_rules = [flag for flag in rule_flags if flag is not None]
     available_weight = 0.0
+    unavailable_reasons: list[str] = []
+
     if assessed_rules:
         available_weight += 0.40
+
     if ensemble_score is not None:
         available_weight += 0.30
+    else:
+        unavailable_reasons.append("Ensemble model features not fully available")
+
     if autoencoder_score is not None:
-        available_weight += 0.20
+        available_weight += 0.30
+    else:
+        unavailable_reasons.append("Autoencoder history accumulating (< 5 observations)")
+
     if trilateration_consistency is not None:
-        available_weight += 0.10
-    return round(min(1.0, max(0.0, available_weight)), 2)
+        pass
+    else:
+        unavailable_reasons.append("Independent receiver observations unavailable")
+
+    confidence = round(min(1.0, max(0.0, available_weight)), 2)
+    if (
+        assessed_rules
+        and ensemble_score is not None
+        and autoencoder_score is not None
+        and trilateration_consistency is not None
+    ):
+        confidence = 1.0
+        unavailable_reasons = []
+
+    return confidence, unavailable_reasons

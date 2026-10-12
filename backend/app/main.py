@@ -95,7 +95,7 @@ async def lifespan(app: FastAPI):
 
     pubsub_task = asyncio.create_task(websocket_pubsub_listener(manager))
 
-    # 2. Run OpenSky Polling Loop if enabled
+    # 2. Run OpenSky Polling Loop & Detection Loop if enabled
     run_ingestion = os.getenv("RUN_INGESTION", "true").lower() == "true"
     ingestion_task = None
     if run_ingestion:
@@ -103,6 +103,12 @@ async def lifespan(app: FastAPI):
         ingestion_task = asyncio.create_task(ingestion_service.start_polling_loop())
     else:
         logger.info("OpenSky Ingestion polling task disabled on this replica instance.")
+
+    run_detection = os.getenv("RUN_DETECTION", "true").lower() == "true"
+    detection_task = None
+    if run_detection:
+        logger.info("Starting detection engine stream consumer task inside API instance.")
+        detection_task = asyncio.create_task(detection_service.start_detection_loop())
 
     # 3. Synchronize stats endpoint & monitor live data continuity
     async def sync_stats_loop():
@@ -196,11 +202,14 @@ async def lifespan(app: FastAPI):
     pubsub_task.cancel()
     if ingestion_task:
         ingestion_task.cancel()
+    if detection_task:
+        detection_task.cancel()
     stats_task.cancel()
 
     await asyncio.gather(
         pubsub_task,
         ingestion_task if ingestion_task else asyncio.sleep(0),
+        detection_task if detection_task else asyncio.sleep(0),
         stats_task,
         return_exceptions=True,
     )

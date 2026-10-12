@@ -167,16 +167,21 @@ export interface AlertLog {
   detected_at?: string;
   callsign: string;
   icao24: string;
+  flightId?: string;
   airline?: string;
   operator?: string;
   type: string;
   severity: 'low' | 'medium' | 'high';
   scoreImpact: number;
   acknowledged: boolean;
+  status?: 'NEW' | 'ACKNOWLEDGED' | 'INVESTIGATING' | 'RESOLVED' | 'DISMISSED';
   is_synthetic?: boolean;
+  reason?: string;
   reason_text?: string;
+  riskScore?: number;
   combined_risk_score?: number | null;
 }
+
 
 export interface HealthStats {
   database_status?: 'CONNECTED' | 'DISCONNECTED' | 'UNKNOWN';
@@ -306,3 +311,209 @@ export interface RuleConfigState {
   min_reliable_nic?: number;
   min_confidence_jump_km?: number;
 }
+
+export interface WatchlistItem {
+  id: number;
+  user_id: number;
+  icao24: string;
+  callsign?: string | null;
+  priority: 'ROUTINE' | 'ELEVATED' | 'HIGH' | 'CRITICAL';
+  notes?: string | null;
+  created_at: string;
+  current_trust_score?: number | null;
+  current_risk_score?: number | null;
+  staleness_status: 'LIVE' | 'STALE' | 'LOST';
+  last_event?: string | null;
+}
+
+export interface AnalystNote {
+  id: number;
+  target_type: 'aircraft' | 'alert' | 'event' | 'case';
+  target_id: string;
+  author_id: number;
+  author_email: string;
+  content: string;
+  created_at: string;
+}
+
+export interface AlertTransition {
+  id: number;
+  alert_id: number;
+  user_id: number;
+  user_email: string;
+  previous_status: string;
+  new_status: string;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface KinematicDeltaItem {
+  field: string;
+  current_value: string;
+  previous_value: string;
+  delta: string;
+  unit: string;
+  is_abnormal: boolean;
+}
+
+export interface AircraftDelta {
+  icao24: string;
+  callsign?: string | null;
+  current_time: string;
+  baseline_time?: string | null;
+  time_delta_seconds: number;
+  deltas: KinematicDeltaItem[];
+  risk_delta?: number | null;
+  trust_delta?: number | null;
+  has_significant_changes: boolean;
+  summary: string;
+}
+
+export interface NarrativeEventItem {
+  timestamp: string;
+  category: 'TELEMETRY' | 'TRUST' | 'ALERT' | 'NOTE' | 'SYSTEM';
+  title: string;
+  description: string;
+  severity: 'INFO' | 'WARN' | 'CRITICAL';
+  data?: Record<string, unknown>;
+}
+
+export interface AircraftNarrative {
+  icao24: string;
+  callsign?: string | null;
+  first_observed: string;
+  last_observed: string;
+  total_events: number;
+  events: NarrativeEventItem[];
+  current_assessment_summary: string;
+}
+
+export interface CorrelatedAircraftItem {
+  icao24: string;
+  callsign?: string | null;
+  distance_km: number;
+  altitude_m: number;
+  velocity_ms: number;
+  trust_score?: number | null;
+  combined_risk_score?: number | null;
+  is_anomaly: boolean;
+  anomaly_reasons: string[];
+}
+
+export interface AirspaceCorrelation {
+  target_icao24: string;
+  radius_km: number;
+  time_window_minutes: number;
+  nearby_aircraft_count: number;
+  anomalous_nearby_count: number;
+  is_correlated_event: boolean;
+  correlation_classification: 'ISOLATED_NOMINAL' | 'AIRCRAFT_SPECIFIC' | 'CORRELATED_TELEMETRY_ANOMALY' | 'AIRSPACE_WIDE_ANOMALY_PATTERN';
+  summary: string;
+  nearby_aircraft: CorrelatedAircraftItem[];
+}
+
+export interface AirspaceRiskCell {
+  lat_min: number;
+  lat_max: number;
+  lng_min: number;
+  lng_max: number;
+  aircraft_count: number;
+  anomaly_count: number;
+  average_risk: number;
+  risk_density: number;
+}
+
+export interface AirspaceRiskGrid {
+  window_minutes: number;
+  total_active_aircraft: number;
+  total_anomalies: number;
+  max_risk_density: number;
+  cells: AirspaceRiskCell[];
+}
+
+export interface AircraftComparison {
+  aircraft_a: AircraftDetailResponse;
+  aircraft_b: AircraftDetailResponse;
+  spatial_separation_km: number;
+  altitude_difference_m: number;
+  speed_difference_ms: number;
+  trust_difference?: number | null;
+  risk_difference?: number | null;
+  comparison_findings: string[];
+}
+
+export interface SourceHealthDetail {
+  source_name: string;
+  connection_status: string;
+  last_successful_update?: string | null;
+  snapshot_age_seconds?: number | null;
+  next_attempt_at?: string | null;
+  retry_after?: number | null;
+  request_status: string;
+  rate_limit_remaining: string;
+  records_received: number;
+  records_normalized: number;
+  records_rejected: number;
+  current_freshness: 'LIVE' | 'REFRESHING' | 'RECENT' | 'STALE' | 'OFFLINE';
+  refresh_in_progress: boolean;
+  manual_refresh_pending: boolean;
+  provider_type: string;
+  provenance_notice: string;
+}
+
+export interface DataQualityMetrics {
+  total_received_vectors: number;
+  total_normalized_vectors: number;
+  total_rejected_vectors: number;
+  missing_altitude_count: number;
+  missing_velocity_count: number;
+  missing_heading_count: number;
+  duplicate_icao_instances: number;
+  stale_observations_count: number;
+  average_ingestion_latency_ms: number;
+  data_quality_score: number;
+}
+
+export interface ModelLayerInfo {
+  name: string;
+  version: string;
+  tier: number;
+  type: string;
+  metrics: Record<string, unknown>;
+  description: string;
+}
+
+export interface ModelMetadata {
+  models: ModelLayerInfo[];
+  active_detector_version: string;
+  features: string[];
+}
+
+export interface AblationConfiguration {
+  configuration: string;
+  precision: number;
+  recall: number;
+  f1: number;
+  false_positive_rate: number;
+  latency_p95_ms: number;
+  notes: string;
+}
+
+export interface AblationStudy {
+  configurations: AblationConfiguration[];
+  dataset_description: string;
+  methodology_notes: string;
+}
+
+export interface PipelineLatency {
+  source_to_redis_ms: number;
+  redis_to_worker_ms: number;
+  worker_processing_ms: number;
+  db_persistence_ms: number;
+  websocket_delivery_ms: number;
+  total_pipeline_ms: number;
+  p50_latency_ms: number;
+  p95_latency_ms: number;
+  p99_latency_ms: number;
+}
+

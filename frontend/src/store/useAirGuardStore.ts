@@ -13,7 +13,7 @@ export interface AirGuardState {
   websocketStatus: 'connecting' | 'connected' | 'disconnected' | 'reconnecting';
   activeFilter: 'all' | 'suspicious' | 'critical';
   currentTier: 'tier1_overview' | 'tier2_investigation' | 'tier3_tools';
-  tier3Tab: 'models' | 'threats' | 'playback' | 'config' | 'admin' | 'story' | 'analytics';
+  tier3Tab: 'models' | 'threats' | 'playback' | 'config' | 'admin' | 'story' | 'analytics' | 'about' | 'investigate' | 'watchlist' | 'sources' | 'alerts';
   showcaseMode: boolean;
   soundEnabled: boolean;
   currentUser: User | null;
@@ -29,7 +29,8 @@ export interface AirGuardState {
   setWebsocketStatus: (status: 'connecting' | 'connected' | 'disconnected' | 'reconnecting') => void;
   setActiveFilter: (filter: 'all' | 'suspicious' | 'critical') => void;
   setCurrentTier: (tier: 'tier1_overview' | 'tier2_investigation' | 'tier3_tools') => void;
-  setTier3Tab: (tab: 'models' | 'threats' | 'playback' | 'config' | 'admin' | 'story' | 'analytics') => void;
+  setTier3Tab: (tab: 'models' | 'threats' | 'playback' | 'config' | 'admin' | 'story' | 'analytics' | 'about' | 'investigate' | 'watchlist' | 'sources' | 'alerts') => void;
+
   setShowcaseMode: (enabled: boolean) => void;
   setSoundEnabled: (enabled: boolean) => void;
   addAlert: (alert: AlertLog) => void;
@@ -146,10 +147,32 @@ function loadSavedFlights(): Flight[] {
   return [];
 }
 
+let saveTimeoutId: number | null = null;
+let lastSaveTime = 0;
+
 function saveFlightsSnapshot(flights: Flight[]): void {
   if (typeof window === 'undefined' || !flights || flights.length === 0) return;
+  
+  const now = Date.now();
+  // Throttle disk writes to at most once per 30 seconds
+  if (now - lastSaveTime < 30000) {
+    if (saveTimeoutId === null) {
+      saveTimeoutId = window.setTimeout(() => {
+        saveTimeoutId = null;
+        saveFlightsSnapshot(flights);
+      }, 30000);
+    }
+    return;
+  }
+  
+  lastSaveTime = now;
   try {
-    const lightweight = flights.slice(0, 15000).map(f => ({
+    // Only persist the top 120 most relevant/critical aircraft to keep localStorage instant (<1ms)
+    const priorityFlights = flights
+      .filter(f => f.status === 'critical' || f.status === 'suspicious' || (f.last_seen_seconds_ago ?? 0) < 60)
+      .slice(0, 120);
+
+    const lightweight = (priorityFlights.length > 0 ? priorityFlights : flights.slice(0, 80)).map(f => ({
       id: f.id,
       callsign: f.callsign,
       squawk: f.squawk,
@@ -172,8 +195,26 @@ function saveFlightsSnapshot(flights: Flight[]): void {
       staleness_status: f.staleness_status,
       data_quality: f.data_quality,
     }));
-    localStorage.setItem('airguard_last_known_flights', JSON.stringify(lightweight));
-  } catch (e) {
+    
+    // Non-blocking save
+    if ('requestIdleCallback' in window) {
+      (window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(() => {
+        try {
+          localStorage.setItem('airguard_last_known_flights', JSON.stringify(lightweight));
+        } catch {
+          /* ignore storage quota errors */
+        }
+      });
+    } else {
+      setTimeout(() => {
+        try {
+          localStorage.setItem('airguard_last_known_flights', JSON.stringify(lightweight));
+        } catch {
+          /* ignore storage quota errors */
+        }
+      }, 0);
+    }
+  } catch (_e) {
     // Silent quota fallback
   }
 }

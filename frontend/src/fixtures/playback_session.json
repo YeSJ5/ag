@@ -1,0 +1,5022 @@
+[
+  {
+    "timestamp": "2026-09-30T18:36:00+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "2140",
+        "altitude": 34449,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.556,
+        "lng": 77.1,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5772,
+            "lng": 77.0788
+          },
+          {
+            "lat": 28.5984,
+            "lng": 77.0576
+          },
+          {
+            "lat": 28.6196,
+            "lng": 77.0364
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "2140",
+        "altitude": 34449,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.556,
+        "lng": 77.1,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5772,
+            "lng": 77.0788
+          },
+          {
+            "lat": 28.5984,
+            "lng": 77.0576
+          },
+          {
+            "lat": 28.6196,
+            "lng": 77.0364
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "2140",
+        "altitude": 27887,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 19.088,
+        "lng": 72.868,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.0687,
+            "lng": 72.891
+          },
+          {
+            "lat": 19.0494,
+            "lng": 72.914
+          },
+          {
+            "lat": 19.0301,
+            "lng": 72.9369
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "2140",
+        "altitude": 30184,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 12.95,
+        "lng": 77.668,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9288,
+            "lng": 77.6468
+          },
+          {
+            "lat": 12.9076,
+            "lng": 77.6256
+          },
+          {
+            "lat": 12.8864,
+            "lng": 77.6044
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "2140",
+        "altitude": 36089,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.363,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.393
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.423
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.453
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "2140",
+        "altitude": 25591,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 13.082,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.112,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.142,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.172,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "2140",
+        "altitude": 39370,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 25.253,
+        "lng": 55.365,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2556,
+            "lng": 55.3351
+          },
+          {
+            "lat": 25.2582,
+            "lng": 55.3052
+          },
+          {
+            "lat": 25.2608,
+            "lng": 55.2753
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "2140",
+        "altitude": 37730,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.0,
+        "lng": 76.5,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.015,
+            "lng": 76.474
+          },
+          {
+            "lat": 28.03,
+            "lng": 76.448
+          },
+          {
+            "lat": 28.045,
+            "lng": 76.4221
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "2140",
+        "altitude": 35433,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 27.2,
+        "lng": 78.0,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.1897,
+            "lng": 78.0282
+          },
+          {
+            "lat": 27.1795,
+            "lng": 78.0564
+          },
+          {
+            "lat": 27.1692,
+            "lng": 78.0846
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "1200",
+        "altitude": 32000,
+        "speed": 460,
+        "heading": 45,
+        "trustScore": 98,
+        "signalStrength": -78,
+        "status": "normal",
+        "lat": 28.6139,
+        "lng": 77.209,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.01
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5739,
+            "lng": 77.179
+          },
+          {
+            "lat": 28.5339,
+            "lng": 77.149
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:00] Ingesting live ADS-B vectors across northern airspace. 10 targets nominal."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:05+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "3421",
+        "altitude": 34474,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 28.5484,
+        "lng": 77.1087,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5696,
+            "lng": 77.0875
+          },
+          {
+            "lat": 28.5908,
+            "lng": 77.0663
+          },
+          {
+            "lat": 28.612,
+            "lng": 77.0451
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "3421",
+        "altitude": 34474,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 28.5484,
+        "lng": 77.1087,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5696,
+            "lng": 77.0875
+          },
+          {
+            "lat": 28.5908,
+            "lng": 77.0663
+          },
+          {
+            "lat": 28.612,
+            "lng": 77.0451
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "3421",
+        "altitude": 27912,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 19.0941,
+        "lng": 72.8604,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.0748,
+            "lng": 72.8834
+          },
+          {
+            "lat": 19.0555,
+            "lng": 72.9064
+          },
+          {
+            "lat": 19.0362,
+            "lng": 72.9293
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "3421",
+        "altitude": 30209,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 12.9571,
+        "lng": 77.6753,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9359,
+            "lng": 77.6541
+          },
+          {
+            "lat": 12.9147,
+            "lng": 77.6329
+          },
+          {
+            "lat": 12.8935,
+            "lng": 77.6117
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "3421",
+        "altitude": 36114,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.3508,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.3808
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.4108
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.4408
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "3421",
+        "altitude": 25616,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 13.0732,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.1032,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1332,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1632,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "3421",
+        "altitude": 39395,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 25.252,
+        "lng": 55.3779,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2546,
+            "lng": 55.348
+          },
+          {
+            "lat": 25.2572,
+            "lng": 55.3181
+          },
+          {
+            "lat": 25.2598,
+            "lng": 55.2882
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "3421",
+        "altitude": 37755,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 27.9943,
+        "lng": 76.5112,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.0093,
+            "lng": 76.4852
+          },
+          {
+            "lat": 28.0243,
+            "lng": 76.4592
+          },
+          {
+            "lat": 28.0393,
+            "lng": 76.4333
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "3421",
+        "altitude": 35458,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 27.2038,
+        "lng": 77.9884,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.1935,
+            "lng": 78.0166
+          },
+          {
+            "lat": 27.1833,
+            "lng": 78.0448
+          },
+          {
+            "lat": 27.173,
+            "lng": 78.073
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "1200",
+        "altitude": 32000,
+        "speed": 460,
+        "heading": 45,
+        "trustScore": 98,
+        "signalStrength": -78,
+        "status": "normal",
+        "lat": 28.6539,
+        "lng": 77.239,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.01
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.6139,
+            "lng": 77.209
+          },
+          {
+            "lat": 28.5739,
+            "lng": 77.179
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:05] Ingesting live ADS-B vectors across northern airspace. 10 targets nominal."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:10+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "2140",
+        "altitude": 34499,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 28.5407,
+        "lng": 77.1174,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5619,
+            "lng": 77.0962
+          },
+          {
+            "lat": 28.5831,
+            "lng": 77.075
+          },
+          {
+            "lat": 28.6043,
+            "lng": 77.0538
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "2140",
+        "altitude": 34499,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 28.5407,
+        "lng": 77.1174,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5619,
+            "lng": 77.0962
+          },
+          {
+            "lat": 28.5831,
+            "lng": 77.075
+          },
+          {
+            "lat": 28.6043,
+            "lng": 77.0538
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "2140",
+        "altitude": 27937,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 19.1001,
+        "lng": 72.8527,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.0808,
+            "lng": 72.8757
+          },
+          {
+            "lat": 19.0615,
+            "lng": 72.8987
+          },
+          {
+            "lat": 19.0422,
+            "lng": 72.9216
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "2140",
+        "altitude": 30234,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 12.9643,
+        "lng": 77.6827,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9431,
+            "lng": 77.6615
+          },
+          {
+            "lat": 12.9219,
+            "lng": 77.6403
+          },
+          {
+            "lat": 12.9007,
+            "lng": 77.6191
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "2140",
+        "altitude": 36139,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.3387,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.3687
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3987
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.4287
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "2140",
+        "altitude": 25641,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 13.0645,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0945,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1245,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1545,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "2140",
+        "altitude": 39420,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 25.251,
+        "lng": 55.3907,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2536,
+            "lng": 55.3608
+          },
+          {
+            "lat": 25.2562,
+            "lng": 55.3309
+          },
+          {
+            "lat": 25.2588,
+            "lng": 55.301
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "2140",
+        "altitude": 37780,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 27.9885,
+        "lng": 76.5225,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.0035,
+            "lng": 76.4965
+          },
+          {
+            "lat": 28.0185,
+            "lng": 76.4705
+          },
+          {
+            "lat": 28.0335,
+            "lng": 76.4446
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "2140",
+        "altitude": 35483,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 27.2075,
+        "lng": 77.9768,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.1972,
+            "lng": 78.005
+          },
+          {
+            "lat": 27.187,
+            "lng": 78.0332
+          },
+          {
+            "lat": 27.1767,
+            "lng": 78.0614
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "1200",
+        "altitude": 32000,
+        "speed": 460,
+        "heading": 45,
+        "trustScore": 98,
+        "signalStrength": -78,
+        "status": "normal",
+        "lat": 28.6939,
+        "lng": 77.269,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.01
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.6539,
+            "lng": 77.239
+          },
+          {
+            "lat": 28.6139,
+            "lng": 77.209
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:10] Ingesting live ADS-B vectors across northern airspace. 10 targets nominal."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:15+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "3421",
+        "altitude": 34524,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 28.5331,
+        "lng": 77.1261,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5543,
+            "lng": 77.1049
+          },
+          {
+            "lat": 28.5755,
+            "lng": 77.0837
+          },
+          {
+            "lat": 28.5967,
+            "lng": 77.0625
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "3421",
+        "altitude": 34524,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 28.5331,
+        "lng": 77.1261,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5543,
+            "lng": 77.1049
+          },
+          {
+            "lat": 28.5755,
+            "lng": 77.0837
+          },
+          {
+            "lat": 28.5967,
+            "lng": 77.0625
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "3421",
+        "altitude": 27962,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 19.1062,
+        "lng": 72.8451,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.0869,
+            "lng": 72.8681
+          },
+          {
+            "lat": 19.0676,
+            "lng": 72.8911
+          },
+          {
+            "lat": 19.0483,
+            "lng": 72.914
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "3421",
+        "altitude": 30259,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 12.9714,
+        "lng": 77.69,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9502,
+            "lng": 77.6688
+          },
+          {
+            "lat": 12.929,
+            "lng": 77.6476
+          },
+          {
+            "lat": 12.9078,
+            "lng": 77.6264
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "3421",
+        "altitude": 36164,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.3265,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.3565
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3865
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.4165
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "3421",
+        "altitude": 25666,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 13.0557,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0857,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1157,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1457,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "3421",
+        "altitude": 39445,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 25.2499,
+        "lng": 55.4036,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2525,
+            "lng": 55.3737
+          },
+          {
+            "lat": 25.2551,
+            "lng": 55.3438
+          },
+          {
+            "lat": 25.2577,
+            "lng": 55.3139
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "3421",
+        "altitude": 37805,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 27.9828,
+        "lng": 76.5337,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9978,
+            "lng": 76.5077
+          },
+          {
+            "lat": 28.0128,
+            "lng": 76.4817
+          },
+          {
+            "lat": 28.0278,
+            "lng": 76.4558
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "3421",
+        "altitude": 35508,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 27.2113,
+        "lng": 77.9651,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.201,
+            "lng": 77.9933
+          },
+          {
+            "lat": 27.1908,
+            "lng": 78.0215
+          },
+          {
+            "lat": 27.1805,
+            "lng": 78.0497
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 32000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 22,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.7339,
+        "lng": 77.299,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.6939,
+            "lng": 77.269
+          },
+          {
+            "lat": 33.6539,
+            "lng": 77.239
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:15] CRITICAL ALERT: SYNTH-JMP (a1b2c3) position jumped 550 km in 5s! Speed > 1,200 km/h."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:20+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "2140",
+        "altitude": 34549,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.5255,
+        "lng": 77.1347,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5467,
+            "lng": 77.1135
+          },
+          {
+            "lat": 28.5679,
+            "lng": 77.0923
+          },
+          {
+            "lat": 28.5891,
+            "lng": 77.0711
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "2140",
+        "altitude": 34549,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.5255,
+        "lng": 77.1347,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5467,
+            "lng": 77.1135
+          },
+          {
+            "lat": 28.5679,
+            "lng": 77.0923
+          },
+          {
+            "lat": 28.5891,
+            "lng": 77.0711
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "2140",
+        "altitude": 27987,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 19.1122,
+        "lng": 72.8374,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.0929,
+            "lng": 72.8604
+          },
+          {
+            "lat": 19.0736,
+            "lng": 72.8834
+          },
+          {
+            "lat": 19.0543,
+            "lng": 72.9063
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "2140",
+        "altitude": 30284,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 12.9786,
+        "lng": 77.6973,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9574,
+            "lng": 77.6761
+          },
+          {
+            "lat": 12.9362,
+            "lng": 77.6549
+          },
+          {
+            "lat": 12.915,
+            "lng": 77.6337
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "2140",
+        "altitude": 36189,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.3144,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.3444
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3744
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.4044
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "2140",
+        "altitude": 25691,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 13.047,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.077,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.107,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.137,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "2140",
+        "altitude": 39470,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 25.2489,
+        "lng": 55.4164,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2515,
+            "lng": 55.3865
+          },
+          {
+            "lat": 25.2541,
+            "lng": 55.3566
+          },
+          {
+            "lat": 25.2567,
+            "lng": 55.3267
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "2140",
+        "altitude": 37830,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 27.9771,
+        "lng": 76.545,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9921,
+            "lng": 76.519
+          },
+          {
+            "lat": 28.0071,
+            "lng": 76.493
+          },
+          {
+            "lat": 28.0221,
+            "lng": 76.4671
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "2140",
+        "altitude": 35533,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 27.215,
+        "lng": 77.9535,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.2047,
+            "lng": 77.9817
+          },
+          {
+            "lat": 27.1945,
+            "lng": 78.0099
+          },
+          {
+            "lat": 27.1842,
+            "lng": 78.0381
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 37000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 12,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.7739,
+        "lng": 77.329,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": true,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.82
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.7339,
+            "lng": 77.299
+          },
+          {
+            "lat": 33.6939,
+            "lng": 77.269
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:20] DUAL VIOLATION: SYNTH-JMP climb rate (80.0 m/s) exceeded civil envelope! Trust collapsed to 12%."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:25+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "3421",
+        "altitude": 34574,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 28.5178,
+        "lng": 77.1434,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.539,
+            "lng": 77.1222
+          },
+          {
+            "lat": 28.5602,
+            "lng": 77.101
+          },
+          {
+            "lat": 28.5814,
+            "lng": 77.0798
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "3421",
+        "altitude": 34574,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 28.5178,
+        "lng": 77.1434,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.539,
+            "lng": 77.1222
+          },
+          {
+            "lat": 28.5602,
+            "lng": 77.101
+          },
+          {
+            "lat": 28.5814,
+            "lng": 77.0798
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "3421",
+        "altitude": 28012,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 19.1183,
+        "lng": 72.8298,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.099,
+            "lng": 72.8528
+          },
+          {
+            "lat": 19.0797,
+            "lng": 72.8758
+          },
+          {
+            "lat": 19.0604,
+            "lng": 72.8987
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "3421",
+        "altitude": 30309,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 12.9857,
+        "lng": 77.7046,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9645,
+            "lng": 77.6834
+          },
+          {
+            "lat": 12.9433,
+            "lng": 77.6622
+          },
+          {
+            "lat": 12.9221,
+            "lng": 77.641
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "3421",
+        "altitude": 36214,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.3022,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.3322
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3622
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3922
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "3421",
+        "altitude": 25716,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 13.0382,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0682,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.0982,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1282,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "3421",
+        "altitude": 39495,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 25.2479,
+        "lng": 55.4293,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2505,
+            "lng": 55.3994
+          },
+          {
+            "lat": 25.2531,
+            "lng": 55.3695
+          },
+          {
+            "lat": 25.2557,
+            "lng": 55.3396
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "3421",
+        "altitude": 37855,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 27.9713,
+        "lng": 76.5562,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9863,
+            "lng": 76.5302
+          },
+          {
+            "lat": 28.0013,
+            "lng": 76.5042
+          },
+          {
+            "lat": 28.0163,
+            "lng": 76.4783
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "3421",
+        "altitude": 35558,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 27.2188,
+        "lng": 77.9419,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.2085,
+            "lng": 77.9701
+          },
+          {
+            "lat": 27.1983,
+            "lng": 77.9983
+          },
+          {
+            "lat": 27.188,
+            "lng": 78.0265
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 42000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 12,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.8139,
+        "lng": 77.359,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": true,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.82
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.7739,
+            "lng": 77.329
+          },
+          {
+            "lat": 33.7339,
+            "lng": 77.299
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:25] Ground Station Tracking: Anomaly flight SYNTH-JMP isolated. Airspace telemetry streaming normally."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:30+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "2140",
+        "altitude": 34599,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 28.5102,
+        "lng": 77.1521,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5314,
+            "lng": 77.1309
+          },
+          {
+            "lat": 28.5526,
+            "lng": 77.1097
+          },
+          {
+            "lat": 28.5738,
+            "lng": 77.0885
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "2140",
+        "altitude": 34599,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 28.5102,
+        "lng": 77.1521,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5314,
+            "lng": 77.1309
+          },
+          {
+            "lat": 28.5526,
+            "lng": 77.1097
+          },
+          {
+            "lat": 28.5738,
+            "lng": 77.0885
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "2140",
+        "altitude": 28037,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 19.1244,
+        "lng": 72.8221,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.1051,
+            "lng": 72.8451
+          },
+          {
+            "lat": 19.0858,
+            "lng": 72.8681
+          },
+          {
+            "lat": 19.0665,
+            "lng": 72.891
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "2140",
+        "altitude": 30334,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 12.9928,
+        "lng": 77.712,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9716,
+            "lng": 77.6908
+          },
+          {
+            "lat": 12.9504,
+            "lng": 77.6696
+          },
+          {
+            "lat": 12.9292,
+            "lng": 77.6484
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "2140",
+        "altitude": 36239,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.29,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.32
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.35
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.38
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "2140",
+        "altitude": 25741,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 13.0295,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0595,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.0895,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1195,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "2140",
+        "altitude": 39520,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 25.2469,
+        "lng": 55.4421,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2495,
+            "lng": 55.4122
+          },
+          {
+            "lat": 25.2521,
+            "lng": 55.3823
+          },
+          {
+            "lat": 25.2547,
+            "lng": 55.3524
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "2140",
+        "altitude": 37880,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 27.9656,
+        "lng": 76.5674,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9806,
+            "lng": 76.5414
+          },
+          {
+            "lat": 27.9956,
+            "lng": 76.5154
+          },
+          {
+            "lat": 28.0106,
+            "lng": 76.4895
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "2140",
+        "altitude": 35583,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -70,
+        "status": "normal",
+        "lat": 27.2226,
+        "lng": 77.9303,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.2123,
+            "lng": 77.9585
+          },
+          {
+            "lat": 27.2021,
+            "lng": 77.9867
+          },
+          {
+            "lat": 27.1918,
+            "lng": 78.0149
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 47000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 12,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.8539,
+        "lng": 77.389,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": true,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.82
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.8139,
+            "lng": 77.359
+          },
+          {
+            "lat": 33.7739,
+            "lng": 77.329
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:30] Ground Station Tracking: Anomaly flight SYNTH-JMP isolated. Airspace telemetry streaming normally."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:35+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "3421",
+        "altitude": 34624,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 28.5026,
+        "lng": 77.1608,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5238,
+            "lng": 77.1396
+          },
+          {
+            "lat": 28.545,
+            "lng": 77.1184
+          },
+          {
+            "lat": 28.5662,
+            "lng": 77.0972
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "3421",
+        "altitude": 34624,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 28.5026,
+        "lng": 77.1608,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5238,
+            "lng": 77.1396
+          },
+          {
+            "lat": 28.545,
+            "lng": 77.1184
+          },
+          {
+            "lat": 28.5662,
+            "lng": 77.0972
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "3421",
+        "altitude": 28062,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 19.1304,
+        "lng": 72.8145,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.1111,
+            "lng": 72.8375
+          },
+          {
+            "lat": 19.0918,
+            "lng": 72.8605
+          },
+          {
+            "lat": 19.0725,
+            "lng": 72.8834
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "3421",
+        "altitude": 30359,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 13.0,
+        "lng": 77.7193,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9788,
+            "lng": 77.6981
+          },
+          {
+            "lat": 12.9576,
+            "lng": 77.6769
+          },
+          {
+            "lat": 12.9364,
+            "lng": 77.6557
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "3421",
+        "altitude": 36264,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.2779,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.3079
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3379
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3679
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "3421",
+        "altitude": 25766,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 13.0207,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0507,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.0807,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1107,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "3421",
+        "altitude": 39545,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 25.2459,
+        "lng": 55.455,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2485,
+            "lng": 55.4251
+          },
+          {
+            "lat": 25.2511,
+            "lng": 55.3952
+          },
+          {
+            "lat": 25.2537,
+            "lng": 55.3653
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "3421",
+        "altitude": 37905,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 27.9599,
+        "lng": 76.5787,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9749,
+            "lng": 76.5527
+          },
+          {
+            "lat": 27.9899,
+            "lng": 76.5267
+          },
+          {
+            "lat": 28.0049,
+            "lng": 76.5008
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "3421",
+        "altitude": 35608,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 96,
+        "signalStrength": -69,
+        "status": "normal",
+        "lat": 27.2263,
+        "lng": 77.9187,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.216,
+            "lng": 77.9469
+          },
+          {
+            "lat": 27.2058,
+            "lng": 77.9751
+          },
+          {
+            "lat": 27.1955,
+            "lng": 78.0033
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 52000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 12,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.8939,
+        "lng": 77.419,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": true,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.82
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.8539,
+            "lng": 77.389
+          },
+          {
+            "lat": 33.8139,
+            "lng": 77.359
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:35] Ground Station Tracking: Anomaly flight SYNTH-JMP isolated. Airspace telemetry streaming normally."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:40+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "2140",
+        "altitude": 34649,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.495,
+        "lng": 77.1695,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5162,
+            "lng": 77.1483
+          },
+          {
+            "lat": 28.5374,
+            "lng": 77.1271
+          },
+          {
+            "lat": 28.5586,
+            "lng": 77.1059
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "2140",
+        "altitude": 34649,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 28.495,
+        "lng": 77.1695,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5162,
+            "lng": 77.1483
+          },
+          {
+            "lat": 28.5374,
+            "lng": 77.1271
+          },
+          {
+            "lat": 28.5586,
+            "lng": 77.1059
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "2140",
+        "altitude": 28087,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 19.1365,
+        "lng": 72.8069,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.1172,
+            "lng": 72.8299
+          },
+          {
+            "lat": 19.0979,
+            "lng": 72.8529
+          },
+          {
+            "lat": 19.0786,
+            "lng": 72.8758
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "2140",
+        "altitude": 30384,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 13.0071,
+        "lng": 77.7266,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9859,
+            "lng": 77.7054
+          },
+          {
+            "lat": 12.9647,
+            "lng": 77.6842
+          },
+          {
+            "lat": 12.9435,
+            "lng": 77.663
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "2140",
+        "altitude": 36289,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.2657,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.2957
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3257
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3557
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "2140",
+        "altitude": 25791,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 13.0119,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0419,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.0719,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.1019,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "2140",
+        "altitude": 39570,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 25.2449,
+        "lng": 55.4678,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2475,
+            "lng": 55.4379
+          },
+          {
+            "lat": 25.2501,
+            "lng": 55.408
+          },
+          {
+            "lat": 25.2527,
+            "lng": 55.3781
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "2140",
+        "altitude": 37930,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 27.9542,
+        "lng": 76.5899,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9692,
+            "lng": 76.5639
+          },
+          {
+            "lat": 27.9842,
+            "lng": 76.5379
+          },
+          {
+            "lat": 27.9992,
+            "lng": 76.512
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "2140",
+        "altitude": 35633,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 94,
+        "signalStrength": -72,
+        "status": "normal",
+        "lat": 27.2301,
+        "lng": 77.907,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.2198,
+            "lng": 77.9352
+          },
+          {
+            "lat": 27.2096,
+            "lng": 77.9634
+          },
+          {
+            "lat": 27.1993,
+            "lng": 77.9916
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 57000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 12,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.9339,
+        "lng": 77.449,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": true,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.82
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.8939,
+            "lng": 77.419
+          },
+          {
+            "lat": 33.8539,
+            "lng": 77.389
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:40] Ground Station Tracking: Anomaly flight SYNTH-JMP isolated. Airspace telemetry streaming normally."
+  },
+  {
+    "timestamp": "2026-09-30T18:36:45+00:00",
+    "flights": [
+      {
+        "id": "80163d",
+        "callsign": "IGO6436",
+        "squawk": "3421",
+        "altitude": 34674,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 28.4873,
+        "lng": 77.1782,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5085,
+            "lng": 77.157
+          },
+          {
+            "lat": 28.5297,
+            "lng": 77.1358
+          },
+          {
+            "lat": 28.5509,
+            "lng": 77.1146
+          }
+        ]
+      },
+      {
+        "id": "800101",
+        "callsign": "AIC101",
+        "squawk": "3421",
+        "altitude": 34674,
+        "speed": 467,
+        "heading": 135,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 28.4873,
+        "lng": 77.1782,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 28.5085,
+            "lng": 77.157
+          },
+          {
+            "lat": 28.5297,
+            "lng": 77.1358
+          },
+          {
+            "lat": 28.5509,
+            "lng": 77.1146
+          }
+        ]
+      },
+      {
+        "id": "800102",
+        "callsign": "SEJ302",
+        "squawk": "3421",
+        "altitude": 28112,
+        "speed": 408,
+        "heading": 310,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 19.1425,
+        "lng": 72.7992,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 19.1232,
+            "lng": 72.8222
+          },
+          {
+            "lat": 19.1039,
+            "lng": 72.8452
+          },
+          {
+            "lat": 19.0846,
+            "lng": 72.8681
+          }
+        ]
+      },
+      {
+        "id": "800103",
+        "callsign": "IGO404",
+        "squawk": "3421",
+        "altitude": 30409,
+        "speed": 437,
+        "heading": 45,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 13.0143,
+        "lng": 77.7339,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 12.9931,
+            "lng": 77.7127
+          },
+          {
+            "lat": 12.9719,
+            "lng": 77.6915
+          },
+          {
+            "lat": 12.9507,
+            "lng": 77.6703
+          }
+        ]
+      },
+      {
+        "id": "800104",
+        "callsign": "VTI818",
+        "squawk": "3421",
+        "altitude": 36314,
+        "speed": 486,
+        "heading": 270,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 22.572,
+        "lng": 88.2535,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 22.572,
+            "lng": 88.2835
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3135
+          },
+          {
+            "lat": 22.572,
+            "lng": 88.3435
+          }
+        ]
+      },
+      {
+        "id": "800105",
+        "callsign": "AXB512",
+        "squawk": "3421",
+        "altitude": 25816,
+        "speed": 379,
+        "heading": 180,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 13.0032,
+        "lng": 80.27,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 13.0332,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.0632,
+            "lng": 80.27
+          },
+          {
+            "lat": 13.0932,
+            "lng": 80.27
+          }
+        ]
+      },
+      {
+        "id": "800106",
+        "callsign": "UAE505",
+        "squawk": "3421",
+        "altitude": 39595,
+        "speed": 505,
+        "heading": 95,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 25.2438,
+        "lng": 55.4807,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 25.2464,
+            "lng": 55.4508
+          },
+          {
+            "lat": 25.249,
+            "lng": 55.4209
+          },
+          {
+            "lat": 25.2516,
+            "lng": 55.391
+          }
+        ]
+      },
+      {
+        "id": "800107",
+        "callsign": "QFA001",
+        "squawk": "3421",
+        "altitude": 37955,
+        "speed": 496,
+        "heading": 120,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 27.9484,
+        "lng": 76.6012,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.9634,
+            "lng": 76.5752
+          },
+          {
+            "lat": 27.9784,
+            "lng": 76.5492
+          },
+          {
+            "lat": 27.9934,
+            "lng": 76.5233
+          }
+        ]
+      },
+      {
+        "id": "800108",
+        "callsign": "BAW142",
+        "squawk": "3421",
+        "altitude": 35658,
+        "speed": 476,
+        "heading": 290,
+        "trustScore": 94,
+        "signalStrength": -71,
+        "status": "normal",
+        "lat": 27.2339,
+        "lng": 77.8954,
+        "is_synthetic": false,
+        "source": "opensky",
+        "trilateration": "Verified (consistent receiver geometry)",
+        "ruleFlags": {
+          "positionJump": false,
+          "duplicateIcao": false,
+          "climbRate": false,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.02
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.01
+          },
+          {
+            "name": "Signal Horizon",
+            "value": 0.02
+          }
+        ],
+        "history": [
+          {
+            "lat": 27.2236,
+            "lng": 77.9236
+          },
+          {
+            "lat": 27.2134,
+            "lng": 77.9518
+          },
+          {
+            "lat": 27.2031,
+            "lng": 77.98
+          }
+        ]
+      },
+      {
+        "id": "a1b2c3",
+        "callsign": "SYNTH-JMP",
+        "squawk": "7700",
+        "altitude": 62000,
+        "speed": 850,
+        "heading": 45,
+        "trustScore": 12,
+        "signalStrength": -94,
+        "status": "critical",
+        "lat": 33.9739,
+        "lng": 77.479,
+        "is_synthetic": true,
+        "source": "synthetic",
+        "trilateration": "Failed (signal geometry physically impossible)",
+        "ruleFlags": {
+          "positionJump": true,
+          "duplicateIcao": false,
+          "climbRate": true,
+          "altVelMismatch": false
+        },
+        "shapValues": [
+          {
+            "name": "Position Delta",
+            "value": 0.89
+          },
+          {
+            "name": "Climb Vector Limit",
+            "value": 0.82
+          },
+          {
+            "name": "Alt-Vel Coherence",
+            "value": 0.35
+          }
+        ],
+        "history": [
+          {
+            "lat": 33.9339,
+            "lng": 77.449
+          },
+          {
+            "lat": 33.8939,
+            "lng": 77.419
+          }
+        ]
+      }
+    ],
+    "log": "[18:36:45] Ground Station Tracking: Anomaly flight SYNTH-JMP isolated. Airspace telemetry streaming normally."
+  }
+]

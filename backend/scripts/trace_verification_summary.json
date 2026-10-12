@@ -1,0 +1,21 @@
+{
+  "icao24": "a26454",
+  "callsign": "HBAL815",
+  "altitude_ft": 65500,
+  "speed_kts": 5,
+  "heading_deg": 112,
+  "combined_risk_score": 0.0193,
+  "trust_score": 98.1,
+  "evidence_confidence": 0.7,
+  "assessment_status": "PARTIALLY_ASSESSED",
+  "detector_matrix": {
+    "physics_rules": "AVAILABLE",
+    "autoencoder": "AVAILABLE",
+    "ensemble": "UNAVAILABLE",
+    "receiver_evidence": "UNAVAILABLE"
+  },
+  "unavailable_reasons": [
+    "Ensemble model features not fully available",
+    "Independent receiver observations unavailable"
+  ]
+}

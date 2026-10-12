@@ -247,7 +247,7 @@ async def test_detection_scoring_pipeline_end_to_end():
 
     # Evidence confidence should reflect rules + autoencoder (0.40 + 0.30 = 0.70)
     assert signals["evidence_confidence"] == 0.70
-    assert latest_assessment.assessment_status in ("PARTIALLY_ASSESSED", "ASSESSED")
+    assert latest_assessment.status in ("PARTIALLY_ASSESSED", "ASSESSED")
 
     # Unavailable reasons should clearly explain missing ensemble and receiver evidence
     assert any("Ensemble" in r for r in signals["unavailable_reasons"])

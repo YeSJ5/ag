@@ -590,3 +590,223 @@ class AircraftDetailResponse(BaseModel):
     )
 
     model_config = {"from_attributes": True, "strict": True, "extra": "ignore"}
+
+
+# --- Intelligence Upgrade Schemas ---
+
+
+class WatchlistItemCreate(BaseModel):
+    icao24: str = Field(..., min_length=3, max_length=6)
+    callsign: str | None = Field(default=None, max_length=10)
+    priority: Literal["LOW", "NORMAL", "HIGH", "CRITICAL"] = "NORMAL"
+    notes: str | None = None
+
+
+class WatchlistItemResponse(BaseModel):
+    id: int | None = None
+    user_id: int
+    icao24: str
+    callsign: str | None = None
+    priority: str
+    notes: str | None = None
+    created_at: datetime
+    current_trust_score: float | None = None
+    current_risk_score: float | None = None
+    staleness_status: str | None = None
+    last_event: str | None = None
+
+    model_config = {"from_attributes": True, "extra": "ignore"}
+
+
+class AnalystNoteCreate(BaseModel):
+    target_type: Literal["aircraft", "alert", "event", "case"]
+    target_id: str = Field(..., min_length=1, max_length=100)
+    content: str = Field(..., min_length=2, max_length=5000)
+
+
+class AnalystNoteResponse(BaseModel):
+    id: int | None = None
+    target_type: str
+    target_id: str
+    author_id: int | None = None
+    author_email: str
+    content: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True, "extra": "ignore"}
+
+
+class AlertTransitionResponse(BaseModel):
+    id: int | None = None
+    alert_id: int
+    user_id: int | None = None
+    user_email: str | None = None
+    previous_status: str
+    new_status: str
+    notes: str | None = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True, "extra": "ignore"}
+
+
+
+class AlertStatusUpdate(BaseModel):
+    status: Literal["NEW", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED", "DISMISSED"]
+    notes: str | None = None
+
+
+class KinematicDeltaItem(BaseModel):
+    field: str
+    current_value: Any
+    previous_value: Any
+    delta: Any
+    unit: str
+    is_abnormal: bool = False
+
+
+class AircraftDeltaResponse(BaseModel):
+    icao24: str
+    callsign: str | None = None
+    current_time: datetime
+    baseline_time: datetime | None = None
+    time_delta_seconds: float
+    deltas: list[KinematicDeltaItem]
+    risk_delta: float | None = None
+    trust_delta: float | None = None
+    has_significant_changes: bool = False
+    summary: str
+
+
+class NarrativeEventItem(BaseModel):
+    timestamp: datetime
+    category: Literal["TELEMETRY", "RULE", "AUTOENCODER", "ENSEMBLE", "TRUST", "ALERT", "NOTE"]
+    title: str
+    description: str
+    severity: Literal["INFO", "WARN", "CRITICAL"] = "INFO"
+    data: dict[str, Any] = Field(default_factory=dict)
+
+
+class AircraftNarrativeResponse(BaseModel):
+    icao24: str
+    callsign: str | None = None
+    first_observed: datetime
+    last_observed: datetime
+    total_events: int
+    events: list[NarrativeEventItem]
+    current_assessment_summary: str
+
+
+class CorrelatedAircraftItem(BaseModel):
+    icao24: str
+    callsign: str | None = None
+    distance_km: float
+    altitude_m: float
+    velocity_ms: float
+    trust_score: float | None = None
+    combined_risk_score: float | None = None
+    is_anomaly: bool = False
+    anomaly_reasons: list[str] = Field(default_factory=list)
+
+
+class AirspaceCorrelationResponse(BaseModel):
+    target_icao24: str
+    radius_km: float
+    time_window_minutes: int
+    nearby_aircraft_count: int
+    anomalous_nearby_count: int
+    is_correlated_event: bool
+    correlation_classification: Literal[
+        "AIRCRAFT_SPECIFIC",
+        "CORRELATED_TELEMETRY_ANOMALY",
+        "AIRSPACE_WIDE_ANOMALY_PATTERN",
+        "ISOLATED_NOMINAL",
+    ]
+    summary: str
+    nearby_aircraft: list[CorrelatedAircraftItem]
+
+
+class AirspaceRiskCell(BaseModel):
+    lat_min: float
+    lat_max: float
+    lng_min: float
+    lng_max: float
+    aircraft_count: int
+    anomaly_count: int
+    average_risk: float
+    risk_density: float
+
+
+class AirspaceRiskGridResponse(BaseModel):
+    window_minutes: int
+    total_active_aircraft: int
+    total_anomalies: int
+    max_risk_density: float
+    cells: list[AirspaceRiskCell]
+
+
+class AircraftComparisonResponse(BaseModel):
+    aircraft_a: AircraftDetailResponse
+    aircraft_b: AircraftDetailResponse
+    spatial_separation_km: float
+    altitude_difference_m: float
+    speed_difference_ms: float
+    trust_difference: float | None = None
+    risk_difference: float | None = None
+    comparison_findings: list[str]
+
+
+class SourceHealthDetailResponse(BaseModel):
+    source_name: str
+    connection_status: str
+    last_successful_update: datetime | None = None
+    snapshot_age_seconds: float | None = None
+    next_attempt_at: datetime | None = None
+    retry_after: int | None = None
+    request_status: str
+    rate_limit_remaining: str | None = None
+    records_received: int
+    records_normalized: int
+    records_rejected: int
+    current_freshness: str
+    refresh_in_progress: bool
+    manual_refresh_pending: bool
+    provider_type: str = "OpenSky State-Vector Data"
+    provenance_notice: str = "Surveillance data ingested via state-vector stream. Not raw radio receiver hardware."
+
+
+class DataQualityResponse(BaseModel):
+    total_received_vectors: int
+    total_normalized_vectors: int
+    total_rejected_vectors: int
+    missing_altitude_count: int
+    missing_velocity_count: int
+    missing_heading_count: int
+    duplicate_icao_instances: int
+    stale_observations_count: int
+    average_ingestion_latency_ms: float
+    data_quality_score: float
+
+
+class ModelMetadataResponse(BaseModel):
+    models: list[dict[str, Any]]
+    active_detector_version: str
+    features: list[str]
+
+
+class AblationStudyResponse(BaseModel):
+    configurations: list[dict[str, Any]]
+    dataset_description: str
+    methodology_notes: str
+
+
+class PipelineLatencyResponse(BaseModel):
+    source_to_redis_ms: float
+    redis_to_worker_ms: float
+    worker_processing_ms: float
+    db_persistence_ms: float
+    websocket_delivery_ms: float
+    total_pipeline_ms: float
+    p50_latency_ms: float
+    p95_latency_ms: float
+    p99_latency_ms: float
+

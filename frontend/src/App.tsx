@@ -5,7 +5,7 @@ import {
   BarChart, Bar, LineChart, Line
 } from 'recharts';
 import { useAirGuardStore as useStore } from './store/useAirGuardStore';
-import { API_BASE, WS_BASE } from './services/api';
+import { API_BASE, WS_BASE, fetchAlerts } from './services/api';
 import type { AircraftApiState, AircraftDetailResponse, AlertApiResponse, Flight, AlertLog, User, AuditLog, HealthStats } from './types';
 
 // Cesium and Resium imports
@@ -20,10 +20,15 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 const CesiumViewerComponent: typeof Viewer = Viewer;
 import { aircraftMotionManager } from './services/aircraftMotionManager';
 import { AirspaceMap } from './components/AirspaceMap';
-const AirspaceEventCandidatePanel = lazy(() => import('./components/threats/AirspaceEventCandidatePanel').then(module => ({ default: module.AirspaceEventCandidatePanel })));
 const HistoricalPlaybackView = lazy(() => import('./components/airspace/HistoricalPlaybackView').then(module => ({ default: module.HistoricalPlaybackView })));
 import { formatObservedNumber, isObservedField } from './utils/dataQuality';
 import { detectorStatusFromRisk, displayableRisk } from './utils/detectorStatus';
+import { InvestigateView } from './components/investigation/InvestigateView';
+import { ThreatsCenter } from './components/threats/ThreatsCenter';
+import { WatchlistManager } from './components/watchlist/WatchlistManager';
+import { SourceHealthCenter } from './components/sources/SourceHealthCenter';
+import { ModelCenter } from './components/models/ModelCenter';
+import { LoginPage } from './components/auth/LoginPage';
 
 // Use a deployment-provided token when an Ion asset requires it; never embed account credentials in the client bundle.
 const cesiumIonToken = import.meta.env.VITE_CESIUM_ION_TOKEN || '';
@@ -458,13 +463,13 @@ export default function App() {
   const {
     flights, selectedFlightId, alerts, activeAlertCount, websocketStatus, backendHealth, activeFilter, token, currentUser,
     setSelectedFlightId, setBackendHealth, setWebsocketStatus, setActiveFilter, addAlert, setAlerts,
-    updateFlightStatus, updateOrAddFlight, updateOrAddFlights, acknowledgeAlert,
+    updateFlightStatus, updateOrAddFlight, updateOrAddFlights,
     setToken, setUser, logout
   } = useStore();
 
   // Single application-shell navigation state.
   const [currentTier, setCurrentTier] = useState<'tier1_overview' | 'tier2_radar' | 'tier3_tools'>('tier1_overview');
-  const [tier3Tab, setTier3Tab] = useState<'details' | 'alerts' | 'analytics' | 'config' | 'playback' | 'admin' | 'about'>('alerts');
+  const [tier3Tab, setTier3Tab] = useState<'admin' | 'playback' | 'config' | 'analytics' | 'about' | 'alerts' | 'details' | 'investigate' | 'threats' | 'watchlist' | 'sources' | 'models'>('threats');
   const [aircraftSearch, setAircraftSearch] = useState('');
   const [showTier2Telemetry, setShowTier2Telemetry] = useState(false);
 
@@ -897,15 +902,6 @@ export default function App() {
   // Historical Playback States
   const [currentUtcTime, setCurrentUtcTime] = useState<string>('');
 
-  // Alerts sorting/filtering/pagination local state
-  const [sortField, setSortField] = useState<'timestamp' | 'callsign' | 'scoreImpact'>('timestamp');
-  const [sortAsc, setSortAsc] = useState<boolean>(false);
-  const [alertPage, setAlertPage] = useState<number>(0);
-  const [alertSearch, setAlertSearch] = useState<string>('');
-  const [alertSeverityFilter, setAlertSeverityFilter] = useState<'all' | 'high' | 'medium' | 'unacked'>('all');
-  const [alertActionError, setAlertActionError] = useState<string | null>(null);
-  const [alertsPerPage, setAlertPerPage] = useState<number>(25);
-
   const [healthData, setHealthData] = useState<HealthStats>({
     poll_latency_ms: null,
     queue_depth: null,
@@ -1278,19 +1274,25 @@ export default function App() {
       const currentFlights = useStore.getState().flights;
       if (currentFlights.length === 0) return;
 
-      const updated = currentFlights.flatMap(f => {
-          if (f.is_synthetic || f.source === 'regional_fallback') return [];
-          const currentAge = (f.last_seen_seconds_ago ?? 0) + 2;
-          const isStale = currentAge > staleAfterSeconds;
-          return [{
-            ...f,
-            last_seen_seconds_ago: currentAge,
-            staleness_status: isStale ? 'STALE' : 'LIVE'
-          }];
-        });
+      let anyChanged = false;
+      const updated = currentFlights.map(f => {
+        const currentAge = (f.last_seen_seconds_ago ?? 0) + 10;
+        const isStale = currentAge > staleAfterSeconds;
+        const newStatus = isStale ? 'STALE' : 'LIVE';
+        if (f.staleness_status !== newStatus) {
+          anyChanged = true;
+        }
+        return {
+          ...f,
+          last_seen_seconds_ago: currentAge,
+          staleness_status: newStatus
+        };
+      });
 
-      useStore.getState().setFlights(updated);
-    }, 2000);
+      if (anyChanged) {
+        useStore.getState().setFlights(updated);
+      }
+    }, 10000);
 
     return () => clearInterval(stalenessInterval);
   }, [staleAfterSeconds, removalAfterSeconds]);
@@ -1967,48 +1969,10 @@ export default function App() {
   const liveAircraftCount = useMemo(() => activeFlights.filter(f => !f.is_synthetic && f.source !== 'regional_fallback' && !f.id.startsWith('sim-') && f.staleness_status !== 'STALE').length, [activeFlights]);
   const upstreamStatus = healthData.upstream_status || (healthData.last_poll_http_status === 429 ? 'RATE_LIMITED' : healthData.last_poll_http_status === 200 ? 'LIVE' : 'UNKNOWN');
 
-  // Filter, Sort and Paginate Alerts
-  const filteredAlerts = useMemo(() => {
-    let list = alerts;
-    if (alertSeverityFilter === 'high') {
-      list = list.filter(a => a.severity === 'high');
-    } else if (alertSeverityFilter === 'medium') {
-      list = list.filter(a => a.severity === 'medium');
-    } else if (alertSeverityFilter === 'unacked') {
-      list = list.filter(a => !a.acknowledged);
-    }
-    if (alertSearch.trim()) {
-      const q = alertSearch.trim().toLowerCase();
-      list = list.filter(a =>
-        a.callsign.toLowerCase().includes(q) ||
-        a.icao24.toLowerCase().includes(q) ||
-        (a.airline && a.airline.toLowerCase().includes(q)) ||
-        (a.type && a.type.toLowerCase().includes(q))
-      );
-    }
-    return list;
-  }, [alerts, alertSeverityFilter, alertSearch]);
-
-  const sortedAlerts = useMemo(() => {
-    return [...filteredAlerts].sort((a, b) => {
-      const valA = a[sortField];
-      const valB = b[sortField];
-      if (typeof valA === 'string') {
-        return sortAsc ? valA.localeCompare(valB as string) : (valB as string).localeCompare(valA);
-      }
-      return sortAsc ? (valA as number) - (valB as number) : (valB as number) - (valA as number);
-    });
-  }, [filteredAlerts, sortField, sortAsc]);
-
-  const paginatedAlerts = useMemo(() => {
-    const start = alertPage * alertsPerPage;
-    return sortedAlerts.slice(start, start + alertsPerPage);
-  }, [sortedAlerts, alertPage, alertsPerPage]);
-
   // Client-Side CSV Export
   const exportAlertsCSV = () => {
     const headers = ["ID", "Timestamp", "Callsign", "Airline", "ICAO24", "Type/Reason", "Severity", "Impact", "Acknowledged"];
-    const rows = sortedAlerts.map(a => [
+    const rows = alerts.map(a => [
       a.id, a.timestamp, a.callsign, a.airline || "Unknown", a.icao24, a.type, a.severity, a.scoreImpact, a.acknowledged
     ]);
     const csvContent = "data:text/csv;charset=utf-8,"
@@ -2054,25 +2018,8 @@ export default function App() {
       } else {
         alert("Failed to compile session report.");
       }
-    } catch (err) {
+    } catch (_err) {
       alert("Connection to backend report engine failed.");
-    }
-  };
-
-  // Trigger server-side alert acknowledgment
-  const handleAcknowledge = async (id: string) => {
-    setAlertActionError(null);
-    if (!token) {
-      setAlertActionError('Sign in again before acknowledging this alert.');
-      return;
-    }
-    try {
-      const response = await fetchWithAuth(`${API_BASE}/api/v1/alerts/${id}/acknowledge`, { method: 'POST' });
-      if (!response.ok) throw new Error(`Server returned ${response.status}`);
-      acknowledgeAlert(id);
-    } catch (error) {
-      console.error('Failed to persist alert acknowledgement:', error);
-      setAlertActionError('The server did not confirm this acknowledgement. The alert remains active.');
     }
   };
 
@@ -2153,98 +2100,19 @@ export default function App() {
   // Ground Station Access / Login Screen
   if (!token || !currentUser) {
     return (
-      <div className="min-h-screen bg-[#060913] flex items-center justify-center p-4 select-none">
-        <div className="w-full max-w-sm bg-[#0a0f1d] border border-slate-800 p-6 rounded">
-          <div className="text-center mb-6 flex flex-col items-center">
-            <div className="w-12 h-12 rounded-xl bg-[#0a1224] border border-sky-500/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(14,165,233,0.25)]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-8 h-8" fill="none">
-                <defs>
-                  <linearGradient id="loginRadarSweep" x1="16" y1="4" x2="28" y2="16" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#38bdf8" />
-                    <stop offset="100%" stopColor="#10b981" />
-                  </linearGradient>
-                  <linearGradient id="loginPlaneGrad" x1="16" y1="8" x2="16" y2="24" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#ffffff" />
-                    <stop offset="100%" stopColor="#bae6fd" />
-                  </linearGradient>
-                </defs>
-                <circle cx="16" cy="16" r="11.5" stroke="#0284c7" strokeWidth="1.2" opacity="0.4" />
-                <path d="M 16 5 A 11 11 0 0 1 27 16" stroke="url(#loginRadarSweep)" strokeWidth="2" strokeLinecap="round" />
-                <path d="M 16 8 L 18 13 L 24.5 16.5 L 24.5 18 L 18 16.5 L 18 21.5 L 20 23 L 20 24 L 16 23.2 L 12 24 L 12 23 L 14 21.5 L 14 16.5 L 7.5 18 L 7.5 16.5 L 14 13 Z"
-                      fill="url(#loginPlaneGrad)"
-                      stroke="#0284c7"
-                      strokeWidth="0.5"
-                      strokeLinejoin="round" />
-                <circle cx="16" cy="8" r="1.2" fill="#10b981" />
-              </svg>
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-white">AirGuard</h1>
-            <span className="text-xs text-sky-400 font-medium tracking-normal mt-0.5">AIRSPACE TRUST & THREAT INTELLIGENCE</span>
-            <p className="text-[11px] text-slate-400 mt-2 font-normal leading-relaxed max-w-xs">
-              Airplanes broadcast unencrypted radio signals without authentication. AirGuard checks incoming telemetry for kinematic inconsistencies. These heuristic flags are leads for review, not proof of spoofing.
-            </p>
-          </div>
-
-          <div role="status" aria-live="polite" className={`mb-4 flex items-center gap-2 rounded border px-3 py-2 text-[11px] ${backendHealth === 'online' ? 'border-emerald-800 bg-emerald-950/30 text-emerald-300' : backendHealth === 'checking' ? 'border-slate-700 bg-slate-900/70 text-slate-400' : backendHealth === 'degraded' ? 'border-amber-800 bg-amber-950/30 text-amber-200' : 'border-rose-900 bg-rose-950/30 text-rose-300'}`}>
-            <span className={`h-2 w-2 rounded-full ${backendHealth === 'online' ? 'bg-emerald-400' : backendHealth === 'checking' ? 'bg-slate-500' : backendHealth === 'degraded' ? 'bg-amber-400' : 'bg-rose-400'}`} />
-            {backendHealth === 'online' ? 'Backend, database, and Redis connected' : backendHealth === 'checking' ? 'Checking backend services…' : backendHealth === 'degraded' ? 'Backend and PostgreSQL connected; Redis unavailable — live streaming is degraded' : 'Backend or database unavailable — check the API and PostgreSQL services'}
-          </div>
-
-          {loginError && (
-            <div className="mb-4 bg-rose-950/40 border border-rose-500/40 text-rose-400 text-[10px] p-2.5 rounded font-normal">
-              ▲ ERROR: {loginError}
-            </div>
-          )}
-
-          <form onSubmit={handleLoginSubmit} className="space-y-4">
-            <div>
-              <label className="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Operator Email</label>
-              <input
-                type="email"
-                required
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                placeholder="operator@airguard.sec"
-                className="w-full bg-[#060913] border border-slate-800 rounded px-3 py-2 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500 font-normal"
-              />
-            </div>
-
-            <div>
-              <label className="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Password</label>
-              <input
-                type="password"
-                required
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full bg-[#060913] border border-slate-800 rounded px-3 py-2 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500 font-normal"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoggingIn}
-              className="w-full bg-cyan-500 hover:bg-cyan-400 disabled:bg-slate-800 disabled:text-slate-500 text-black font-bold text-xs py-2.5 rounded transition-colors mt-2"
-            >
-              {isLoggingIn ? (isRegistering ? "CREATING ACCOUNT..." : "SIGNING IN...") : (isRegistering ? "CREATE VIEWER ACCOUNT" : "SIGN IN")}
-            </button>
-          </form>
-
-          <button
-            type="button"
-            onClick={() => { setIsRegistering((value) => !value); setLoginError(null); }}
-            className="mt-4 w-full text-xs text-sky-300 hover:text-white transition-colors"
-          >
-            {isRegistering ? "Already registered? Sign in" : "New to AirGuard? Create a viewer account"}
-          </button>
-
-          <div className="mt-4 border-t border-slate-800/60 pt-3 text-center">
-            <span className="text-[10px] text-slate-600 uppercase font-normal">
-              SECURE LINK // SIGNED SESSION TOKEN
-            </span>
-          </div>
-        </div>
-      </div>
+      <LoginPage
+        onLogin={handleLoginSubmit}
+        loginEmail={loginEmail}
+        setLoginEmail={setLoginEmail}
+        loginPassword={loginPassword}
+        setLoginPassword={setLoginPassword}
+        isLoggingIn={isLoggingIn}
+        isRegistering={isRegistering}
+        setIsRegistering={setIsRegistering}
+        loginError={loginError}
+        setLoginError={setLoginError}
+        backendHealth={backendHealth}
+      />
     );
   }
 
@@ -2480,10 +2348,10 @@ export default function App() {
         <button
           onClick={() => {
             setCurrentTier('tier3_tools');
-            setTier3Tab('alerts');
+            setTier3Tab('threats');
           }}
           className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-            currentTier === 'tier3_tools' && tier3Tab === 'alerts'
+            currentTier === 'tier3_tools' && (tier3Tab === 'threats' || tier3Tab === 'alerts')
               ? 'bg-rose-500/20 text-rose-200 border border-rose-400/40 shadow-[0_0_10px_rgba(244,63,94,0.2)]'
               : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
           }`}
@@ -2504,10 +2372,14 @@ export default function App() {
         <button
           onClick={() => {
             if (!selectedFlightId && flights[0]) setSelectedFlightId(flights[0].id);
-            setCurrentTier('tier2_radar');
-            setIsDetailDrawerOpen(true);
+            setCurrentTier('tier3_tools');
+            setTier3Tab('investigate');
           }}
-          className="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer"
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+            currentTier === 'tier3_tools' && tier3Tab === 'investigate'
+              ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+              : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
+          }`}
         >
           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
@@ -2515,26 +2387,49 @@ export default function App() {
           <span>Investigate</span>
         </button>
 
+        <span className="mx-1 h-5 border-l border-slate-800" />
+
         <button
           onClick={() => {
             setCurrentTier('tier3_tools');
-            setTier3Tab('analytics');
+            setTier3Tab('watchlist');
           }}
           className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-            currentTier === 'tier3_tools' && tier3Tab === 'analytics'
-              ? 'bg-sky-500/20 text-sky-200 border border-sky-400/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]'
+            currentTier === 'tier3_tools' && tier3Tab === 'watchlist'
+              ? 'bg-sky-500/20 text-sky-200 border border-sky-400/40'
               : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
           }`}
         >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10" />
-            <line x1="12" y1="20" x2="12" y2="4" />
-            <line x1="6" y1="20" x2="6" y2="14" />
-          </svg>
-          <span>Analytics</span>
+          <span>Watchlist</span>
         </button>
 
-        <span className="mx-1 h-5 border-l border-slate-800" />
+        <button
+          onClick={() => {
+            setCurrentTier('tier3_tools');
+            setTier3Tab('sources');
+          }}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+            currentTier === 'tier3_tools' && tier3Tab === 'sources'
+              ? 'bg-sky-500/20 text-sky-200 border border-sky-400/40'
+              : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
+          }`}
+        >
+          <span>Data Sources</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setCurrentTier('tier3_tools');
+            setTier3Tab('models');
+          }}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+            currentTier === 'tier3_tools' && tier3Tab === 'models'
+              ? 'bg-purple-500/20 text-purple-200 border border-purple-400/40'
+              : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
+          }`}
+        >
+          <span>Models</span>
+        </button>
 
         <button
           onClick={() => {
@@ -2578,7 +2473,7 @@ export default function App() {
       {/* Shows: (1) Poll Status/Time, (2) Raw OpenSky Count, (3) Detection Count,  */}
       {/*        (4) Count Reaching Frontend Store & 3D Globe                       */}
       {/* ========================================================================= */}
-      <div className={`bg-[#0b1220] border-b border-slate-800 px-4 py-1 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono select-text z-20 ${currentTier === 'tier2_radar' ? 'hidden' : 'flex'}`}>
+      <div className={`bg-[#0b1220] border-b border-slate-800 px-4 py-1 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono select-text z-20 ${currentTier === 'tier1_overview' ? 'flex' : 'hidden'}`}>
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
           <span className="font-bold text-cyan-400 tracking-wider">PIPELINE HUD:</span>
@@ -4463,375 +4358,63 @@ export default function App() {
 
       {/* ========================================================================= */}
       {/* Threat review, analytics, playback, system configuration, and administration */}
-      {/* One clear focal point per tool. Muted neutral controls.                   */}
+      {/* Maximized workspace view taking full viewport height.                     */}
       {/* ========================================================================= */}
       {currentTier === 'tier3_tools' && (
-        <div className={`flex-1 flex flex-col min-h-0 relative z-10 ${tier3Tab === 'playback' ? 'px-2 sm:px-4 pt-2 pb-2 h-full overflow-hidden' : 'px-4 md:px-6 py-4'}`}>
-
-          {/* Shared workspace header and navigation */}
-          <div className={`flex flex-wrap items-center justify-between border-b border-slate-800 ${tier3Tab === 'playback' ? 'pb-2 mb-2' : 'pb-3 mb-4'} gap-3`}>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setCurrentTier('tier2_radar')}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-1.5 rounded transition-colors flex items-center gap-1.5"
-              >
-                <span>← BACK TO AIRSPACE</span>
-              </button>
-              <span className="text-slate-700 hidden sm:inline">|</span>
-              <span className="text-xs font-bold text-slate-400 uppercase hidden md:inline">
-                AIRGUARD WORKSPACE
-              </span>
+        <div className="flex-1 flex flex-col min-h-0 h-full relative z-10 p-3 sm:p-4 md:p-6 overflow-hidden">
+          {/* Tool 0: Dedicated Investigation View */}
+          {tier3Tab === 'investigate' && (
+            <div className="flex-1 overflow-y-auto min-h-0 h-full">
+              <InvestigateView
+                selectedIcao={selectedFlightId}
+                availableFlights={flights}
+                onSelectIcao={(icao) => setSelectedFlightId(icao)}
+              />
             </div>
+          )}
 
-            {/* Workspace tabs */}
-            <div className="flex flex-wrap bg-[#04070e] border border-slate-800 rounded p-0.5 text-xs font-bold">
-              <button
-                onClick={() => setTier3Tab('alerts')}
-                className={`px-3 py-1 rounded transition-colors ${
-                  tier3Tab === 'alerts'
-                    ? 'bg-slate-800 text-cyan-400'
-                    : 'text-slate-500 hover:text-slate-300 font-normal'
-                }`}
-              >
-                ALERTS ({activeAlertCount !== undefined && activeAlertCount > 0 ? activeAlertCount : alerts.length})
-              </button>
-              <button
-                onClick={() => setTier3Tab('analytics')}
-                className={`px-3 py-1 rounded transition-colors ${
-                  tier3Tab === 'analytics'
-                    ? 'bg-slate-800 text-cyan-400'
-                    : 'text-slate-500 hover:text-slate-300 font-normal'
-                }`}
-              >
-                ANALYTICS
-              </button>
-              <button
-                onClick={() => setTier3Tab('config')}
-                className={`px-3 py-1 rounded transition-colors ${
-                  tier3Tab === 'config'
-                    ? 'bg-slate-800 text-cyan-400'
-                    : 'text-slate-500 hover:text-slate-300 font-normal'
-                }`}
-              >
-                THRESHOLDS
-              </button>
-              <button
-                onClick={() => setTier3Tab('playback')}
-                className={`px-3 py-1 rounded transition-colors ${
-                  tier3Tab === 'playback'
-                    ? 'bg-slate-800 text-cyan-400'
-                    : 'text-slate-500 hover:text-slate-300 font-normal'
-                }`}
-              >
-                PLAYBACK
-              </button>
-              {currentUser?.role === 'admin' && (
-                <button
-                  onClick={() => setTier3Tab('admin')}
-                  className={`px-3 py-1 rounded transition-colors ${
-                    tier3Tab === 'admin'
-                      ? 'bg-slate-800 text-cyan-400'
-                      : 'text-slate-500 hover:text-slate-300 font-normal'
-                  }`}
-                >
-                  ADMIN
-                </button>
-              )}
-              <button
-                onClick={() => setTier3Tab('about')}
-                className={`px-3 py-1 rounded transition-colors ${
-                  tier3Tab === 'about'
-                    ? 'bg-slate-800 text-cyan-400'
-                    : 'text-slate-500 hover:text-slate-300 font-normal'
-                }`}
-              >
-                PRODUCT GUIDE
-              </button>
+          {/* Tool 0.5 & 1: Threats Intelligence & Operations Center */}
+          {(tier3Tab === 'threats' || tier3Tab === 'alerts') && (
+            <div className="flex-1 min-h-0 h-full overflow-hidden flex flex-col">
+              <ThreatsCenter
+                alerts={alerts}
+                onSelectAircraft={(icao) => {
+                  setSelectedFlightId(icao);
+                  setTier3Tab('investigate');
+                }}
+                onRefreshAlerts={() => {
+                  fetchAlerts().then(a => setAlerts(a)).catch(() => {});
+                }}
+                onExportCsv={exportAlertsCSV}
+                onExportPdf={downloadSessionReportPDF}
+              />
             </div>
-          </div>
+          )}
 
-          {/* Tool 1: Alerts Audit Log Table */}
-          {tier3Tab === 'alerts' && (
-            <section className="flex-1 bg-[#080d18] border border-slate-800 rounded flex flex-col overflow-y-auto p-4 md:p-5 min-h-0 space-y-4">
-              {/* Header & Quick Actions */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-slate-100 uppercase m-0">ALERTS AUDIT LOG RECORD</h2>
-                    <span className="bg-cyan-950/80 border border-cyan-800/80 text-cyan-300 text-[10px] font-bold px-2 py-0.5 rounded">
-                      {alerts.length} LOADED ({activeAlertCount !== undefined ? `${activeAlertCount} ACTIVE` : 'LIVE'})
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-1 font-normal">
-                    Searchable log of flagged telemetry anomalies. Review, acknowledge, investigate on live radar, and export records.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={exportAlertsCSV}
-                    className="bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-200 font-bold text-xs py-1.5 px-3.5 rounded transition-colors flex items-center gap-1.5"
-                  >
-                    <span>📊 EXPORT CSV</span>
-                  </button>
-                  <button
-                    onClick={downloadSessionReportPDF}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs py-1.5 px-3.5 rounded transition-colors flex items-center gap-1.5"
-                  >
-                    <span>📄 SESSION PDF</span>
-                  </button>
-                </div>
-              </div>
+          {/* Tool 0.6: Watchlist Manager */}
+          {tier3Tab === 'watchlist' && (
+            <div className="flex-1 overflow-y-auto min-h-0 h-full">
+              <WatchlistManager
+                onSelectAircraft={(icao) => {
+                  setSelectedFlightId(icao);
+                  setTier3Tab('investigate');
+                }}
+              />
+            </div>
+          )}
 
-              {alertActionError && (
-                <p className="rounded-lg border border-amber-800/60 bg-amber-950/30 p-2.5 text-xs text-amber-200" role="alert">
-                  {alertActionError}
-                </p>
-              )}
+          {/* Tool 0.7: Data Sources Health */}
+          {tier3Tab === 'sources' && (
+            <div className="flex-1 overflow-y-auto min-h-0 h-full">
+              <SourceHealthCenter />
+            </div>
+          )}
 
-              {/* Search and Filters Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-[#04070e] border border-slate-800 rounded-lg p-3">
-                <div className="flex flex-1 min-w-[240px] items-center gap-2">
-                  <span className="text-slate-500 text-xs">🔍</span>
-                  <input
-                    type="text"
-                    placeholder="Search by flight callsign, airline (e.g. IndiGo), ICAO hex, or anomaly reason..."
-                    value={alertSearch}
-                    onChange={(e) => {
-                      setAlertSearch(e.target.value);
-                      setAlertPage(0);
-                    }}
-                    className="w-full bg-transparent border-0 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-0 font-normal"
-                  />
-                  {alertSearch && (
-                    <button
-                      onClick={() => { setAlertSearch(''); setAlertPage(0); }}
-                      className="text-slate-500 hover:text-slate-300 text-xs px-1"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                  <button
-                    onClick={() => { setAlertSeverityFilter('all'); setAlertPage(0); }}
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
-                      alertSeverityFilter === 'all'
-                        ? 'bg-slate-700 text-cyan-300 border border-slate-600'
-                        : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
-                    }`}
-                  >
-                    ALL ({alerts.length})
-                  </button>
-                  <button
-                    onClick={() => { setAlertSeverityFilter('high'); setAlertPage(0); }}
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
-                      alertSeverityFilter === 'high'
-                        ? 'bg-rose-950/80 text-rose-300 border border-rose-800'
-                        : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
-                    }`}
-                  >
-                    🔴 CRITICAL ({alerts.filter(a => a.severity === 'high').length})
-                  </button>
-                  <button
-                    onClick={() => { setAlertSeverityFilter('medium'); setAlertPage(0); }}
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
-                      alertSeverityFilter === 'medium'
-                        ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
-                        : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
-                    }`}
-                  >
-                    🟡 SUSPICIOUS ({alerts.filter(a => a.severity === 'medium').length})
-                  </button>
-                  <button
-                    onClick={() => { setAlertSeverityFilter('unacked'); setAlertPage(0); }}
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${
-                      alertSeverityFilter === 'unacked'
-                        ? 'bg-sky-950/80 text-sky-300 border border-sky-800'
-                        : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
-                    }`}
-                  >
-                    ⚠️ UNACKNOWLEDGED ({alerts.filter(a => !a.acknowledged).length})
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs text-slate-400 font-normal">
-                  <span>Per page:</span>
-                  <select
-                    value={alertsPerPage}
-                    onChange={(e) => {
-                      setAlertPerPage(Number(e.target.value));
-                      setAlertPage(0);
-                    }}
-                    className="bg-[#080d18] border border-slate-800 rounded px-2 py-1 text-slate-200 text-xs focus:outline-none"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Airspace Event Candidates Panel (Collapsible) */}
-              <details className="border border-slate-800/80 bg-[#04070e]/80 rounded-lg overflow-hidden group">
-                <summary className="px-4 py-2.5 bg-slate-900/50 border-b border-slate-800/80 cursor-pointer flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white select-none transition-colors">
-                  <div className="flex items-center gap-2">
-                    <span className="text-cyan-400">⚡</span>
-                    <span className="tracking-wide">MULTI-AIRCRAFT PROXIMITY EVENT REVIEW & CASE DERIVATION</span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 font-normal group-open:rotate-180 transition-transform">▼ Click to expand/collapse</span>
-                </summary>
-                <div className="p-3">
-                  <Suspense fallback={<div className="p-4 text-xs text-slate-400">Loading airspace event review…</div>}>
-                    <AirspaceEventCandidatePanel onInvestigate={(icao24) => {
-                      setSelectedFlightId(icao24);
-                      setIsDetailDrawerOpen(true);
-                      setCurrentTier('tier2_radar');
-                    }} />
-                  </Suspense>
-                </div>
-              </details>
-
-              {/* Alerts Audit Log Table */}
-              <div className="border border-slate-800/80 rounded-lg overflow-x-auto bg-[#04070e]/50">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-800 bg-slate-900/60 text-slate-400 uppercase text-[10px] tracking-wider">
-                      <th className="py-3 px-3 cursor-pointer hover:text-slate-200 font-bold" onClick={() => { setSortField('timestamp'); setSortAsc(!sortAsc); }}>
-                        Timestamp {sortField === 'timestamp' && (sortAsc ? '▲' : '▼')}
-                      </th>
-                      <th className="py-3 px-3 cursor-pointer hover:text-slate-200 font-bold" onClick={() => { setSortField('callsign'); setSortAsc(!sortAsc); }}>
-                        Aircraft & Airline {sortField === 'callsign' && (sortAsc ? '▲' : '▼')}
-                      </th>
-                      <th className="py-3 px-3 font-bold">ICAO Hex</th>
-                      <th className="py-3 px-3 font-bold">Anomaly Evidence / Reason</th>
-                      <th className="py-3 px-3 font-bold">Severity</th>
-                      <th className="py-3 px-3 cursor-pointer hover:text-slate-200 font-bold" onClick={() => { setSortField('scoreImpact'); setSortAsc(!sortAsc); }}>
-                        Impact {sortField === 'scoreImpact' && (sortAsc ? '▲' : '▼')}
-                      </th>
-                      <th className="py-3 px-3 font-bold text-center">Status / Acknowledge</th>
-                      <th className="py-3 px-3 font-bold text-right">Radar Investigation</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-xs font-normal">
-                    {paginatedAlerts.length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="py-12 text-center text-slate-500">
-                          {alertSearch ? `No alert logs matching "${alertSearch}".` : "No alert logs available in active stream."}
-                        </td>
-                      </tr>
-                    ) : (
-                      paginatedAlerts.map(a => {
-                        const sevColor =
-                          a.severity === 'high' ? 'bg-rose-950/80 text-rose-300 border border-rose-800' : 'bg-amber-950/80 text-amber-300 border border-amber-800';
-                        const airlineInfo = getAirlineInfo(a.callsign, a.icao24);
-                        return (
-                          <tr key={a.id} className={`hover:bg-slate-800/30 transition-colors ${a.acknowledged ? 'opacity-50' : ''}`}>
-                            <td className="py-2.5 px-3 text-slate-400 font-mono text-[11px] whitespace-nowrap">{a.timestamp}</td>
-                            <td className="py-2.5 px-3">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-100">{a.callsign}</span>
-                                {airlineInfo.name && airlineInfo.code !== 'GEN' && (
-                                  <span
-                                    className="text-[9px] font-bold px-1.5 py-0.5 rounded border"
-                                    style={{
-                                      backgroundColor: `${airlineInfo.color}22`,
-                                      borderColor: `${airlineInfo.color}66`,
-                                      color: airlineInfo.color === '#002b66' || airlineInfo.color === '#003366' ? '#93c5fd' : airlineInfo.color
-                                    }}
-                                  >
-                                    {airlineInfo.name}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-400 font-mono text-[11px]">{a.icao24.toUpperCase()}</td>
-                            <td className="py-2.5 px-3 text-slate-300">
-                              {a.is_synthetic && <span className="bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.5 rounded border border-slate-700 mr-2 uppercase font-bold">TEST</span>}
-                              <span>{a.type}</span>
-                            </td>
-                            <td className="py-2.5 px-3 whitespace-nowrap">
-                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${sevColor}`}>
-                                {a.is_synthetic ? 'TEST' : a.severity}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-rose-400 font-bold whitespace-nowrap">{a.scoreImpact} pts</td>
-                            <td className="py-2.5 px-3 text-center">
-                              {a.acknowledged ? (
-                                <span className="text-[10px] text-slate-500 border border-slate-800 bg-[#04070e] px-2 py-0.5 rounded">
-                                  ACKNOWLEDGED
-                                </span>
-                              ) : (
-                                <button
-                                  onClick={() => handleAcknowledge(a.id)}
-                                  className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded transition-colors font-medium border border-slate-700"
-                                >
-                                  ACKNOWLEDGE
-                                </button>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-3 text-right">
-                              <button
-                                onClick={() => {
-                                  setSelectedFlightId(a.icao24);
-                                  setIsDetailDrawerOpen(true);
-                                  setCurrentTier('tier2_radar');
-                                }}
-                                className="text-[10px] bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 font-bold px-2.5 py-1 rounded transition-colors"
-                              >
-                                🎯 TRACK ON MAP
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination Controls */}
-              <div className="flex flex-wrap items-center justify-between border-t border-slate-800 pt-3 gap-3 text-xs font-normal">
-                <span className="text-slate-400 text-[11px]">
-                  Showing {sortedAlerts.length > 0 ? alertPage * alertsPerPage + 1 : 0} - {Math.min((alertPage + 1) * alertsPerPage, sortedAlerts.length)} of {sortedAlerts.length} logs
-                  {alerts.length !== sortedAlerts.length && ` (filtered from ${alerts.length} total)`}
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    disabled={alertPage === 0}
-                    onClick={() => setAlertPage(0)}
-                    className="border border-slate-800 bg-[#04070e] px-2 py-1 rounded text-slate-400 hover:text-slate-200 disabled:opacity-30 text-[11px]"
-                  >
-                    « FIRST
-                  </button>
-                  <button
-                    disabled={alertPage === 0}
-                    onClick={() => setAlertPage(alertPage - 1)}
-                    className="border border-slate-800 bg-[#04070e] px-2.5 py-1 rounded text-slate-400 hover:text-slate-200 disabled:opacity-30 text-[11px]"
-                  >
-                    ‹ PREV
-                  </button>
-                  <span className="px-2 text-slate-300 font-bold text-[11px]">
-                    Page {alertPage + 1} of {Math.max(1, Math.ceil(sortedAlerts.length / alertsPerPage))}
-                  </span>
-                  <button
-                    disabled={(alertPage + 1) * alertsPerPage >= sortedAlerts.length}
-                    onClick={() => setAlertPage(alertPage + 1)}
-                    className="border border-slate-800 bg-[#04070e] px-2.5 py-1 rounded text-slate-400 hover:text-slate-200 disabled:opacity-30 text-[11px]"
-                  >
-                    NEXT ›
-                  </button>
-                  <button
-                    disabled={(alertPage + 1) * alertsPerPage >= sortedAlerts.length}
-                    onClick={() => setAlertPage(Math.max(0, Math.ceil(sortedAlerts.length / alertsPerPage) - 1))}
-                    className="border border-slate-800 bg-[#04070e] px-2 py-1 rounded text-slate-400 hover:text-slate-200 disabled:opacity-30 text-[11px]"
-                  >
-                    LAST »
-                  </button>
-                </div>
-              </div>
-            </section>
+          {/* Tool 0.8: Model Intelligence Center */}
+          {tier3Tab === 'models' && (
+            <div className="flex-1 overflow-y-auto min-h-0 h-full">
+              <ModelCenter />
+            </div>
           )}
 
           {/* Tool 2: Analytics & Replay */}

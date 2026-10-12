@@ -64,7 +64,7 @@ async def test_get_aircraft(mock_db):
     )
 
     mock_res = MagicMock()
-    mock_res.all.return_value = [(mock_state, None, "INSUFFICIENT_EVIDENCE")]
+    mock_res.all.return_value = [(mock_state, None, "INSUFFICIENT_EVIDENCE", {})]
     mock_db.execute.return_value = mock_res
 
     transport = ASGITransport(app=app)
