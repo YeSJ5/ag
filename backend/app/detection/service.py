@@ -246,6 +246,7 @@ class DetectionService:
 
         score_entry = {
             "ensemble_score": ensemble_score,
+            "alert_triggered": bool(is_alert_triggered and not is_suppressed),
             "autoencoder_score": ae_score,
             "receiver_consistency_score": trilateration_score,
             "combined_risk_score": combined_risk_score,
@@ -258,6 +259,10 @@ class DetectionService:
             "unavailable_reasons": unavailable_reasons,
         }
         self.latest_scores[icao24] = score_entry
+
+        # Keep recent observations available for subsequent instant evaluations.
+        self.history[icao24] = [record] + prev_history[:9]
+
         return score_entry
 
     async def start_detection_loop(self) -> None:
@@ -769,6 +774,7 @@ class DetectionService:
                 FEATURE_NAMES[i + 4] for i, f in enumerate(rule_flags) if f
             ],
             "ensemble_score": ensemble_score,
+            "alert_triggered": bool(is_alert_triggered and not is_suppressed),
             "autoencoder_score": ae_score,
             "receiver_consistency": trilateration_score,
             "is_known_entity": is_suppressed,
@@ -778,6 +784,7 @@ class DetectionService:
 
         score_entry = {
             "ensemble_score": ensemble_score,
+            "alert_triggered": bool(is_alert_triggered and not is_suppressed),
             "autoencoder_score": ae_score,
             "receiver_consistency_score": trilateration_score,
             "combined_risk_score": combined_risk_score,
@@ -880,6 +887,7 @@ class DetectionService:
                                     "low_signal_confidence": rule_low_signal,
                                 },
                                 "ensemble_score": ensemble_score,
+                                "alert_triggered": bool(is_alert_triggered and not is_suppressed),
                                 "autoencoder_score": ae_score,
                                 "receiver_consistency": trilateration_score,
                                 "trust_score": trust_val,
@@ -905,6 +913,7 @@ class DetectionService:
                             "receiver_consistency": tri_evidence,
                             "model_scores": {
                                 "ensemble_score": ensemble_score,
+                                "alert_triggered": bool(is_alert_triggered and not is_suppressed),
                                 "autoencoder_score": ae_score,
                             },
                             "rule_assessment_coverage": self.latest_scores[icao24][

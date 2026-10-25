@@ -136,6 +136,8 @@ class OpenSkyIngestionService:
         # Do not turn missing telemetry into plausible-looking zeros. DB numeric
         # columns remain non-null for compatibility, while data_quality tells every
         # downstream consumer which values were actually observed.
+        if vector is None:
+            return None
         source_fields = OpenSkyStateVectorSource.FIELDS
 
         def raw(index: int) -> Any:

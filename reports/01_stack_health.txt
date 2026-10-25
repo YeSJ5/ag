@@ -1,0 +1,27 @@
+GET http://127.0.0.1:8001/health
+HTTP/1.1 200 OK
+{
+  "status": "healthy",
+  "database": "connected",
+  "redis": "connected",
+  "upstream": "LIVE",
+  "service": "AirGuard"
+}
+
+GET http://127.0.0.1:8001/api/v1/system-health
+HTTP/1.1 200 OK
+{
+  "database_status": "CONNECTED",
+  "redis_status": "CONNECTED",
+  "circuit_breaker_state": "CLOSED",
+  "upstream_status": "LIVE",
+  "feed_mode": "LIVE",
+  "feed_source": "opensky_live",
+  "rate_limit_remaining": "392",
+  "live_continuity_status": "HEALTHY",
+  "snapshot_count": 12347,
+  "total_real_states": 1024499
+}
+
+GET http://127.0.0.1:5173/
+HTTP/1.1 200 OK [Vite + CesiumJS Frontend Active]
