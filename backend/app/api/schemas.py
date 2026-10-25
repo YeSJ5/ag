@@ -649,7 +649,6 @@ class AlertTransitionResponse(BaseModel):
     model_config = {"from_attributes": True, "extra": "ignore"}
 
 
-
 class AlertStatusUpdate(BaseModel):
     status: Literal["NEW", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED", "DISMISSED"]
     notes: str | None = None
@@ -679,7 +678,9 @@ class AircraftDeltaResponse(BaseModel):
 
 class NarrativeEventItem(BaseModel):
     timestamp: datetime
-    category: Literal["TELEMETRY", "RULE", "AUTOENCODER", "ENSEMBLE", "TRUST", "ALERT", "NOTE"]
+    category: Literal[
+        "TELEMETRY", "RULE", "AUTOENCODER", "ENSEMBLE", "TRUST", "ALERT", "NOTE"
+    ]
     title: str
     description: str
     severity: Literal["INFO", "WARN", "CRITICAL"] = "INFO"
@@ -771,7 +772,9 @@ class SourceHealthDetailResponse(BaseModel):
     refresh_in_progress: bool
     manual_refresh_pending: bool
     provider_type: str = "OpenSky State-Vector Data"
-    provenance_notice: str = "Surveillance data ingested via state-vector stream. Not raw radio receiver hardware."
+    provenance_notice: str = (
+        "Surveillance data ingested via state-vector stream. Not raw radio receiver hardware."
+    )
 
 
 class DataQualityResponse(BaseModel):
@@ -809,4 +812,3 @@ class PipelineLatencyResponse(BaseModel):
     p50_latency_ms: float
     p95_latency_ms: float
     p99_latency_ms: float
-

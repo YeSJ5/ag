@@ -92,21 +92,26 @@ class DetectionService:
 
         rule_alt_vel = None
         if record.get("on_ground") is True:
-            alt = float(record.get("altitude_m") if record.get("altitude_m") is not None else 0.0)
-            vel = float(record.get("velocity_ms") if record.get("velocity_ms") is not None else 0.0)
+            alt = float(
+                record.get("altitude_m")
+                if record.get("altitude_m") is not None
+                else 0.0
+            )
+            vel = float(
+                record.get("velocity_ms")
+                if record.get("velocity_ms") is not None
+                else 0.0
+            )
             rule_alt_vel, _, _ = check_altitude_velocity_mismatch(
                 alt,
                 vel,
                 True,
                 self.rule_config,
             )
-        elif (
-            {"altitude", "velocity", "on_ground"}.issubset(observed)
-            or (
-                record.get("altitude_m") is not None
-                and record.get("velocity_ms") is not None
-                and record.get("on_ground") is not None
-            )
+        elif {"altitude", "velocity", "on_ground"}.issubset(observed) or (
+            record.get("altitude_m") is not None
+            and record.get("velocity_ms") is not None
+            and record.get("on_ground") is not None
         ):
             rule_alt_vel, _, _ = check_altitude_velocity_mismatch(
                 float(record["altitude_m"]),
@@ -130,7 +135,13 @@ class DetectionService:
             except Exception:
                 prev_dt = None
 
-        if prev_record and rec_dt and prev_dt and record.get("latitude") is not None and record.get("longitude") is not None:
+        if (
+            prev_record
+            and rec_dt
+            and prev_dt
+            and record.get("latitude") is not None
+            and record.get("longitude") is not None
+        ):
             rule_jump, _, _ = check_position_jump(
                 current_lat=record["latitude"],
                 current_lon=record["longitude"],
@@ -144,7 +155,11 @@ class DetectionService:
         rule_dup = None
         rule_low_signal = None
         reported_nic = record.get("reported_nic")
-        if reported_nic is not None and record.get("latitude") is not None and record.get("longitude") is not None:
+        if (
+            reported_nic is not None
+            and record.get("latitude") is not None
+            and record.get("longitude") is not None
+        ):
             rule_low_signal, _, _ = check_low_signal_confidence(
                 reported_nic=reported_nic,
                 current_lat=record["latitude"],
@@ -158,6 +173,7 @@ class DetectionService:
 
         # Check rolling kinematic window for ML models
         states = [record] + prev_history[:4]
+
         def _has_kinematics(s: dict[str, Any]) -> bool:
             return (
                 s.get("velocity_ms") is not None
@@ -168,9 +184,17 @@ class DetectionService:
         complete_window = len(states) >= 5 and all(_has_kinematics(s) for s in states)
         speed_var = heading_var = alt_rate_var = time_diff = None
         if complete_window:
-            speeds = [s["velocity_ms"] for s in states if s.get("velocity_ms") is not None]
-            headings = [s["heading_deg"] for s in states if s.get("heading_deg") is not None]
-            vert_rates = [s["vertical_rate_ms"] for s in states if s.get("vertical_rate_ms") is not None]
+            speeds = [
+                s["velocity_ms"] for s in states if s.get("velocity_ms") is not None
+            ]
+            headings = [
+                s["heading_deg"] for s in states if s.get("heading_deg") is not None
+            ]
+            vert_rates = [
+                s["vertical_rate_ms"]
+                for s in states
+                if s.get("vertical_rate_ms") is not None
+            ]
             if len(speeds) >= 5 and len(headings) >= 5 and len(vert_rates) >= 5:
                 speed_var = float(np.var(speeds))
                 heading_var = float(np.var(headings))
@@ -179,32 +203,57 @@ class DetectionService:
                     time_diff = max(0.1, (rec_dt - prev_dt).total_seconds())
 
         ae_score = None
-        if self.autoencoder is not None and speed_var is not None and time_diff is not None:
+        if (
+            self.autoencoder is not None
+            and speed_var is not None
+            and time_diff is not None
+        ):
             try:
-                ae_features = np.array([speed_var, heading_var, alt_rate_var, time_diff])
+                ae_features = np.array(
+                    [speed_var, heading_var, alt_rate_var, time_diff]
+                )
                 ae_score = self.autoencoder.compute_anomaly_score(ae_features)
             except Exception:
                 ae_score = None
 
         ensemble_score = None
-        if self.ensemble is not None and speed_var is not None and time_diff is not None:
+        if (
+            self.ensemble is not None
+            and speed_var is not None
+            and time_diff is not None
+        ):
             try:
                 r_jump = float(rule_jump) if rule_jump is not None else 0.0
                 r_dup = float(rule_dup) if rule_dup is not None else 0.0
                 r_climb = float(rule_climb) if rule_climb is not None else 0.0
                 r_alt_vel = float(rule_alt_vel) if rule_alt_vel is not None else 0.0
-                r_low_sig = float(rule_low_signal) if rule_low_signal is not None else 0.0
-                feature_vector = np.array([
-                    speed_var, heading_var, alt_rate_var, time_diff,
-                    r_jump, r_dup, r_climb, r_alt_vel, r_low_sig
-                ])
+                r_low_sig = (
+                    float(rule_low_signal) if rule_low_signal is not None else 0.0
+                )
+                feature_vector = np.array(
+                    [
+                        speed_var,
+                        heading_var,
+                        alt_rate_var,
+                        time_diff,
+                        r_jump,
+                        r_dup,
+                        r_climb,
+                        r_alt_vel,
+                        r_low_sig,
+                    ]
+                )
                 ensemble_score, _ = self.ensemble.predict_anomaly(feature_vector)
             except Exception:
                 ensemble_score = None
 
         sensors = record.get("sensors") or []
         trilateration_score = None
-        if sensors and record.get("latitude") is not None and record.get("longitude") is not None:
+        if (
+            sensors
+            and record.get("latitude") is not None
+            and record.get("longitude") is not None
+        ):
             try:
                 trilateration_score, _, _ = check_trilateration_plausibility(
                     record["latitude"], record["longitude"], sensors
@@ -247,6 +296,9 @@ class DetectionService:
         score_entry = {
             "ensemble_score": ensemble_score,
             "alert_triggered": bool(is_alert_triggered and not is_suppressed),
+            "rules_triggered": [
+                FEATURE_NAMES[i + 4] for i, f in enumerate(rule_flags) if f
+            ],
             "autoencoder_score": ae_score,
             "receiver_consistency_score": trilateration_score,
             "combined_risk_score": combined_risk_score,
@@ -526,12 +578,18 @@ class DetectionService:
                 )
             rule_alt_vel, alt_vel_reason, alt_vel_evidence = (None, None, {})
             if record.get("on_ground") is True:
-                alt = float(record.get("altitude_m") if record.get("altitude_m") is not None else 0.0)
-                vel = float(record.get("velocity_ms") if record.get("velocity_ms") is not None else 0.0)
+                alt = float(
+                    record.get("altitude_m")
+                    if record.get("altitude_m") is not None
+                    else 0.0
+                )
+                vel = float(
+                    record.get("velocity_ms")
+                    if record.get("velocity_ms") is not None
+                    else 0.0
+                )
                 rule_alt_vel, alt_vel_reason, alt_vel_evidence = (
-                    check_altitude_velocity_mismatch(
-                        alt, vel, True, self.rule_config
-                    )
+                    check_altitude_velocity_mismatch(alt, vel, True, self.rule_config)
                 )
             elif {"altitude", "velocity", "on_ground"}.issubset(observed):
                 rule_alt_vel, alt_vel_reason, alt_vel_evidence = (
@@ -606,10 +664,21 @@ class DetectionService:
 
         complete_window = len(states) >= 5 and all(_has_kinematics(s) for s in states)
         speeds = [s["velocity_ms"] for s in states if s.get("velocity_ms") is not None]
-        headings = [s["heading_deg"] for s in states if s.get("heading_deg") is not None]
-        vert_rates = [s["vertical_rate_ms"] for s in states if s.get("vertical_rate_ms") is not None]
+        headings = [
+            s["heading_deg"] for s in states if s.get("heading_deg") is not None
+        ]
+        vert_rates = [
+            s["vertical_rate_ms"]
+            for s in states
+            if s.get("vertical_rate_ms") is not None
+        ]
 
-        if complete_window and len(speeds) >= 5 and len(headings) >= 5 and len(vert_rates) >= 5:
+        if (
+            complete_window
+            and len(speeds) >= 5
+            and len(headings) >= 5
+            and len(vert_rates) >= 5
+        ):
             speed_var = float(np.var(speeds))
             heading_var = float(np.var(headings))
             alt_rate_var = float(np.var(vert_rates))
@@ -779,7 +848,6 @@ class DetectionService:
             "receiver_consistency": trilateration_score,
             "is_known_entity": is_suppressed,
             "known_entity_label": known_label,
-            "alert_triggered": bool(is_alert_triggered and not is_suppressed),
         }
 
         score_entry = {
@@ -799,7 +867,10 @@ class DetectionService:
         self.latest_scores[icao24] = score_entry
         try:
             from app.core.redis import redis_client
-            await redis_client.hset("airguard:latest_scores", icao24, json.dumps(score_entry))
+
+            await redis_client.hset(
+                "airguard:latest_scores", icao24, json.dumps(score_entry)
+            )
         except Exception:
             pass
         logger.debug(
@@ -887,7 +958,9 @@ class DetectionService:
                                     "low_signal_confidence": rule_low_signal,
                                 },
                                 "ensemble_score": ensemble_score,
-                                "alert_triggered": bool(is_alert_triggered and not is_suppressed),
+                                "alert_triggered": bool(
+                                    is_alert_triggered and not is_suppressed
+                                ),
                                 "autoencoder_score": ae_score,
                                 "receiver_consistency": trilateration_score,
                                 "trust_score": trust_val,
@@ -913,7 +986,9 @@ class DetectionService:
                             "receiver_consistency": tri_evidence,
                             "model_scores": {
                                 "ensemble_score": ensemble_score,
-                                "alert_triggered": bool(is_alert_triggered and not is_suppressed),
+                                "alert_triggered": bool(
+                                    is_alert_triggered and not is_suppressed
+                                ),
                                 "autoencoder_score": ae_score,
                             },
                             "rule_assessment_coverage": self.latest_scores[icao24][

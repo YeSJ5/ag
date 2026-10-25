@@ -1,18 +1,18 @@
-import pytest
-from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.main import app
-from app.api.deps import get_current_user, get_db
-from app.models import User, AircraftState, AircraftAssessment, Alert, AlertTransition, WatchlistItem, AnalystNote
+from app.api.deps import get_current_user
 from app.detection.trust import (
+    classify_evidence_quadrant,
     classify_telemetry_trust_state,
     compute_detector_agreement,
-    classify_evidence_quadrant,
-    generate_why_assessment,
     generate_alert_counter_evidence,
+    generate_why_assessment,
 )
+from app.main import app
+from app.models import User
 
 
 def test_trust_state_classification():
@@ -24,7 +24,6 @@ def test_trust_state_classification():
     assert classify_telemetry_trust_state(None) == "INSUFFICIENT EVIDENCE"
 
 
-
 def test_detector_agreement_computation():
     dag = compute_detector_agreement(
         rule_flags={"climbRate": False, "positionJump": False},
@@ -33,7 +32,11 @@ def test_detector_agreement_computation():
         receiver_consistency_score=None,
         trust_score=92.0,
     )
-    assert dag["agreeing_count"] == 4 if "agreeing_count" in dag else dag["passing_count"] == 4
+    assert (
+        dag["agreeing_count"] == 4
+        if "agreeing_count" in dag
+        else dag["passing_count"] == 4
+    )
     assert dag["has_disagreement"] is False
     assert dag["agreement_ratio"] == 1.0
 
@@ -66,7 +69,7 @@ def test_evidence_quadrant_classification():
         "signals": {
             "autoencoder_score": 0.08,
             "ensemble_score": 0.05,
-        }
+        },
     }
     quads = classify_evidence_quadrant(
         state=state,
@@ -98,7 +101,9 @@ def test_alert_counter_evidence():
         autoencoder_score=0.15,
     )
     assert len(counter) >= 1
-    assert any("not corroborate" in c.lower() or "emergency" in c.lower() for c in counter)
+    assert any(
+        "not corroborate" in c.lower() or "emergency" in c.lower() for c in counter
+    )
 
 
 @pytest.fixture

@@ -107,7 +107,9 @@ async def lifespan(app: FastAPI):
     run_detection = os.getenv("RUN_DETECTION", "true").lower() == "true"
     detection_task = None
     if run_detection:
-        logger.info("Starting detection engine stream consumer task inside API instance.")
+        logger.info(
+            "Starting detection engine stream consumer task inside API instance."
+        )
         detection_task = asyncio.create_task(detection_service.start_detection_loop())
 
     # 3. Synchronize stats endpoint & monitor live data continuity

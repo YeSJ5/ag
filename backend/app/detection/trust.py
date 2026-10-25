@@ -224,7 +224,11 @@ def compute_detector_agreement(
             "status": "ALERT" if has_rule_alert else "PASS",
             "score": 1.0 if has_rule_alert else 0.0,
             "label": "Kinematic Physics Rules",
-            "details": f"{sum(1 for v in rule_flags.values() if v is True)} rule violations" if has_rule_alert else "Physics boundaries satisfied",
+            "details": (
+                f"{sum(1 for v in rule_flags.values() if v is True)} rule violations"
+                if has_rule_alert
+                else "Physics boundaries satisfied"
+            ),
         }
     else:
         layers["kinematic_rules"] = {
@@ -237,7 +241,9 @@ def compute_detector_agreement(
     # 2. PyTorch Autoencoder (Reconstruction Loss)
     if autoencoder_score is not None:
         ae_val = float(autoencoder_score)
-        ae_status = "ALERT" if ae_val >= 0.40 else ("WARN" if ae_val >= 0.20 else "PASS")
+        ae_status = (
+            "ALERT" if ae_val >= 0.40 else ("WARN" if ae_val >= 0.20 else "PASS")
+        )
         layers["autoencoder"] = {
             "status": ae_status,
             "score": round(ae_val, 4),
@@ -255,7 +261,9 @@ def compute_detector_agreement(
     # 3. Supervised Soft-Voting Ensemble (RF + GB)
     if ensemble_score is not None:
         ens_val = float(ensemble_score)
-        ens_status = "ALERT" if ens_val >= 0.50 else ("WARN" if ens_val >= 0.25 else "PASS")
+        ens_status = (
+            "ALERT" if ens_val >= 0.50 else ("WARN" if ens_val >= 0.25 else "PASS")
+        )
         layers["ensemble"] = {
             "status": ens_status,
             "score": round(ens_val, 4),
@@ -273,7 +281,9 @@ def compute_detector_agreement(
     # 4. Spatial / Receiver Consistency
     if receiver_consistency_score is not None:
         rc_val = float(receiver_consistency_score)
-        rc_status = "PASS" if rc_val >= 0.70 else ("WARN" if rc_val >= 0.40 else "ALERT")
+        rc_status = (
+            "PASS" if rc_val >= 0.70 else ("WARN" if rc_val >= 0.40 else "ALERT")
+        )
         layers["receiver_consistency"] = {
             "status": rc_status,
             "score": round(rc_val, 4),
@@ -306,19 +316,27 @@ def compute_detector_agreement(
             "details": "Trust score uncomputed",
         }
 
-    active_layers = [l for l in layers.values() if l["status"] != "INSUFFICIENT_DATA"]
+    active_layers = [
+        layer for layer in layers.values() if layer["status"] != "INSUFFICIENT_DATA"
+    ]
     evaluating_count = len(active_layers)
-    alerting_count = sum(1 for l in active_layers if l["status"] in ("ALERT", "WARN"))
-    passing_count = sum(1 for l in active_layers if l["status"] == "PASS")
+    alerting_count = sum(
+        1 for layer in active_layers if layer["status"] in ("ALERT", "WARN")
+    )
+    passing_count = sum(1 for layer in active_layers if layer["status"] == "PASS")
 
-    has_disagreement = evaluating_count >= 2 and alerting_count > 0 and passing_count > 0
+    has_disagreement = (
+        evaluating_count >= 2 and alerting_count > 0 and passing_count > 0
+    )
 
     if evaluating_count == 0:
         agreement_summary = "Insufficient data across detectors"
         agreement_ratio = 0.0
     elif has_disagreement:
         agreement_summary = f"{passing_count}/{evaluating_count} nominal vs {alerting_count}/{evaluating_count} flagged — Detector disagreement reduces assessment confidence"
-        agreement_ratio = round(max(passing_count, alerting_count) / evaluating_count, 2)
+        agreement_ratio = round(
+            max(passing_count, alerting_count) / evaluating_count, 2
+        )
     elif alerting_count > 0:
         agreement_summary = f"{alerting_count}/{evaluating_count} detectors in agreement (Anomaly corroborated)"
         agreement_ratio = 1.0
@@ -352,11 +370,27 @@ def classify_evidence_quadrant(
     source = state.get("source", "opensky")
 
     observed = [
-        f"Transponder coordinates: ({lat:.4f}°, {lng:.4f}°)" if lat is not None and lng is not None else "Coordinates reported",
-        f"Barometric Altitude: {alt:.0f} m ({alt * 3.28084:.0f} ft)" if alt is not None else "Altitude reported",
-        f"Ground Velocity: {vel:.1f} m/s ({vel * 1.94384:.0f} kts)" if vel is not None else "Ground speed reported",
+        (
+            f"Transponder coordinates: ({lat:.4f}°, {lng:.4f}°)"
+            if lat is not None and lng is not None
+            else "Coordinates reported"
+        ),
+        (
+            f"Barometric Altitude: {alt:.0f} m ({alt * 3.28084:.0f} ft)"
+            if alt is not None
+            else "Altitude reported"
+        ),
+        (
+            f"Ground Velocity: {vel:.1f} m/s ({vel * 1.94384:.0f} kts)"
+            if vel is not None
+            else "Ground speed reported"
+        ),
         f"True Track Heading: {hdg:.1f}°" if hdg is not None else "Heading reported",
-        f"Vertical Rate: {vr:+.1f} m/s ({vr * 196.85:+.0f} ft/min)" if vr is not None else "Vertical rate reported",
+        (
+            f"Vertical Rate: {vr:+.1f} m/s ({vr * 196.85:+.0f} ft/min)"
+            if vr is not None
+            else "Vertical rate reported"
+        ),
         f"Telemetry Ingestion Source: {source}",
     ]
 
@@ -364,7 +398,11 @@ def classify_evidence_quadrant(
     if vel is not None and alt is not None:
         alt_ft = alt * 3.28084
         vel_kts = vel * 1.94384
-        derived.append(f"Kinematic regime: Cruise ({alt_ft:.0f} ft, {vel_kts:.0f} kts)" if alt_ft > 10000 else f"Low-altitude flight ({alt_ft:.0f} ft, {vel_kts:.0f} kts)")
+        derived.append(
+            f"Kinematic regime: Cruise ({alt_ft:.0f} ft, {vel_kts:.0f} kts)"
+            if alt_ft > 10000
+            else f"Low-altitude flight ({alt_ft:.0f} ft, {vel_kts:.0f} kts)"
+        )
     if vr is not None:
         derived.append(f"Climb vector: {vr * 196.85:+.0f} ft/min")
 
@@ -373,13 +411,19 @@ def classify_evidence_quadrant(
         comb_risk = assessment.get("combined_risk_score")
         if comb_risk is not None:
             model_inferred.append(f"Combined Detector Risk: {comb_risk:.4f}")
-            model_inferred.append(f"Derived Telemetry Trust Score: {derive_trust_score(comb_risk)}%")
+            model_inferred.append(
+                f"Derived Telemetry Trust Score: {derive_trust_score(comb_risk)}%"
+            )
         signals = assessment.get("signals", {})
         if isinstance(signals, dict):
             if signals.get("autoencoder_score") is not None:
-                model_inferred.append(f"Autoencoder Reconstruction Loss: {signals['autoencoder_score']:.4f}")
+                model_inferred.append(
+                    f"Autoencoder Reconstruction Loss: {signals['autoencoder_score']:.4f}"
+                )
             if signals.get("ensemble_score") is not None:
-                model_inferred.append(f"Ensemble Anomaly Probability: {signals['ensemble_score'] * 100:.1f}%")
+                model_inferred.append(
+                    f"Ensemble Anomaly Probability: {signals['ensemble_score'] * 100:.1f}%"
+                )
 
     if alert and isinstance(alert, dict):
         reasons = alert.get("reason_text", "")
@@ -437,28 +481,42 @@ def generate_why_assessment(
                 not_triggered.append(f"Rule Nominal: {name}")
 
     if not rule_flags:
-        not_triggered.append("Kinematic physics rules: All nominal within operational bounds")
+        not_triggered.append(
+            "Kinematic physics rules: All nominal within operational bounds"
+        )
 
     # Autoencoder
     if autoencoder_score is not None:
         if autoencoder_score >= 0.30:
-            triggered.append(f"Autoencoder: Multivariate reconstruction residual spiked to {autoencoder_score:.4f}")
+            triggered.append(
+                f"Autoencoder: Multivariate reconstruction residual spiked to {autoencoder_score:.4f}"
+            )
         else:
-            not_triggered.append(f"Autoencoder: Normal kinematic latent pattern (residual {autoencoder_score:.4f} <= 0.30)")
+            not_triggered.append(
+                f"Autoencoder: Normal kinematic latent pattern (residual {autoencoder_score:.4f} <= 0.30)"
+            )
 
     # Ensemble
     if ensemble_score is not None:
         if ensemble_score >= 0.50:
-            triggered.append(f"Supervised Ensemble: Anomaly probability reached {ensemble_score * 100:.1f}%")
+            triggered.append(
+                f"Supervised Ensemble: Anomaly probability reached {ensemble_score * 100:.1f}%"
+            )
         else:
-            not_triggered.append(f"Supervised Ensemble: Nominal classification (anomaly probability {ensemble_score * 100:.1f}% < 50%)")
+            not_triggered.append(
+                f"Supervised Ensemble: Nominal classification (anomaly probability {ensemble_score * 100:.1f}% < 50%)"
+            )
 
     # Trust Score
     if trust_score is not None:
         if trust_score < 70.0:
-            triggered.append(f"Trust Engine: Telemetry trust degraded to {trust_score:.1f}%")
+            triggered.append(
+                f"Trust Engine: Telemetry trust degraded to {trust_score:.1f}%"
+            )
         else:
-            not_triggered.append(f"Trust Engine: Telemetry trust sustained at {trust_score:.1f}%")
+            not_triggered.append(
+                f"Trust Engine: Telemetry trust sustained at {trust_score:.1f}%"
+            )
 
     if alert_reason and alert_reason not in triggered:
         triggered.append(f"Flagged Condition: {alert_reason}")
@@ -515,4 +573,3 @@ def generate_alert_counter_evidence(
     )
 
     return counter_reasons
-

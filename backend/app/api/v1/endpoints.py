@@ -57,10 +57,10 @@ from app.api.schemas import (
     AirspaceEventCaseCreate,
     AirspaceEventCaseResponse,
     AirspaceEventCaseUpdate,
+    AirspaceRiskCell,
     AirspaceRiskGridResponse,
     AlertResponse,
     AlertStatusUpdate,
-    AlertTransitionResponse,
     AnalystNoteCreate,
     AnalystNoteResponse,
     AuditLogResponse,
@@ -85,7 +85,10 @@ from app.core.database import get_db
 from app.core.limiter import limiter
 from app.core.security import create_access_token, get_password_hash, verify_password
 from app.detection.autoencoder import combine_scores
-from app.detection.rules import check_altitude_velocity_mismatch, check_impossible_climb_rate
+from app.detection.rules import (
+    check_altitude_velocity_mismatch,
+    check_impossible_climb_rate,
+)
 from app.detection.trust import (
     classify_evidence_quadrant,
     classify_risk_pattern,
@@ -93,7 +96,6 @@ from app.detection.trust import (
     compute_detector_agreement,
     compute_weighted_rolling_risk,
     derive_trust_score,
-    generate_alert_counter_evidence,
     generate_why_assessment,
 )
 from app.ingestion.opensky_auth import opensky_auth
@@ -618,14 +620,26 @@ async def get_aircraft(
 
         comb_risk = round(assessment_risk, 4) if assessment_risk is not None else None
         if comb_risk is None:
-            rule_climb = check_impossible_climb_rate(s.vertical_rate_ms, active_rule_config)[0] if s.vertical_rate_ms is not None else None
-            rule_alt_vel = check_altitude_velocity_mismatch(s.altitude_m, s.velocity_ms, s.on_ground, active_rule_config)[0] if (s.altitude_m is not None and s.velocity_ms is not None) else None
+            rule_climb = (
+                check_impossible_climb_rate(s.vertical_rate_ms, active_rule_config)[0]
+                if s.vertical_rate_ms is not None
+                else None
+            )
+            rule_alt_vel = (
+                check_altitude_velocity_mismatch(
+                    s.altitude_m, s.velocity_ms, s.on_ground, active_rule_config
+                )[0]
+                if (s.altitude_m is not None and s.velocity_ms is not None)
+                else None
+            )
             rule_flags = [None, None, rule_climb, rule_alt_vel, None]
             c_risk, is_alt = combine_scores(rule_flags, None, None, None)
             if c_risk is not None:
                 comb_risk = round(c_risk, 4)
                 if not assessment_status or assessment_status == "UNASSESSED":
-                    assessment_status = "REVIEW_REQUIRED" if is_alt else "PARTIALLY_ASSESSED"
+                    assessment_status = (
+                        "REVIEW_REQUIRED" if is_alt else "PARTIALLY_ASSESSED"
+                    )
 
         trust_val = derive_trust_score(comb_risk)
         evidence_conf = None
@@ -1041,7 +1055,9 @@ async def get_aircraft_detail(
         explanation = "Observation history is accumulating. Not enough scored evidence exists to compute a defensible detector risk or trust score."
 
     trust_state = classify_telemetry_trust_state(
-        trust_val, evidence_confidence=evidence_conf, assessment_status=assessment_status
+        trust_val,
+        evidence_confidence=evidence_conf,
+        assessment_status=assessment_status,
     )
     detector_agreement = compute_detector_agreement(
         rule_flags=rule_flags,
@@ -1068,9 +1084,11 @@ async def get_aircraft_detail(
             "source": latest_state.source,
         },
         alert={"reason_text": latest_alert.reason_text} if latest_alert else None,
-        assessment={"combined_risk_score": risk_score, "signals": assessment_signals}
-        if latest_assessment
-        else None,
+        assessment=(
+            {"combined_risk_score": risk_score, "signals": assessment_signals}
+            if latest_assessment
+            else None
+        ),
     )
 
     trust_resp = AircraftTrustDetailResponse(
@@ -2462,9 +2480,7 @@ async def get_aircraft_delta(
     # Heading delta
     c_hdg = current.heading_deg if current.heading_deg is not None else 0.0
     b_hdg = (
-        baseline.heading_deg
-        if baseline and baseline.heading_deg is not None
-        else c_hdg
+        baseline.heading_deg if baseline and baseline.heading_deg is not None else c_hdg
     )
     hdg_diff = round(c_hdg - b_hdg, 1)
     if hdg_diff > 180:
@@ -2543,9 +2559,7 @@ async def get_aircraft_delta(
     summary = (
         f"Significant kinematic/trust drift observed over {time_delta:.0f}s baseline: "
         + ", ".join(
-            f"{d.field} changed by {d.delta} {d.unit}"
-            for d in deltas
-            if d.is_abnormal
+            f"{d.field} changed by {d.delta} {d.unit}" for d in deltas if d.is_abnormal
         )
         if has_sig
         else f"Kinematics stable across {time_delta:.0f}s observation window. Nominal progression."
@@ -2610,7 +2624,9 @@ async def get_aircraft_narrative(
     # Query analyst notes
     res_notes = await db.execute(
         select(AnalystNote)
-        .where(AnalystNote.target_type == "aircraft", AnalystNote.target_id == clean_icao)
+        .where(
+            AnalystNote.target_type == "aircraft", AnalystNote.target_id == clean_icao
+        )
         .order_by(AnalystNote.created_at.asc())
     )
     notes = res_notes.scalars().all()
@@ -2660,7 +2676,11 @@ async def get_aircraft_narrative(
                 title=f"Security Anomaly Triggered ({', '.join(a.rule_flags or ['Anomaly'])})",
                 description=f"Detector triggered security alert: {a.reason_text} (Combined Risk: {a.combined_risk_score:.3f}).",
                 severity="CRITICAL",
-                data={"alert_id": a.id, "risk": a.combined_risk_score, "rules": a.rule_flags},
+                data={
+                    "alert_id": a.id,
+                    "risk": a.combined_risk_score,
+                    "rules": a.rule_flags,
+                },
             )
         )
 
@@ -2705,7 +2725,9 @@ async def get_aircraft_narrative(
     )
 
 
-@router.get("/airspace/correlation/{icao24}", response_model=AirspaceCorrelationResponse)
+@router.get(
+    "/airspace/correlation/{icao24}", response_model=AirspaceCorrelationResponse
+)
 @limiter.limit("30/minute")
 async def get_airspace_correlation(
     request: Request,
@@ -2749,7 +2771,12 @@ async def get_airspace_correlation(
         .subquery()
     )
     stmt = (
-        select(AircraftState, AircraftAssessment.combined_risk_score, Alert.id, Alert.reason_text)
+        select(
+            AircraftState,
+            AircraftAssessment.combined_risk_score,
+            Alert.id,
+            Alert.reason_text,
+        )
         .join(
             subq,
             (AircraftState.icao24 == subq.c.icao24)
@@ -2771,7 +2798,9 @@ async def get_airspace_correlation(
         dist = _distance_km(t_lat, t_lng, s.latitude, s.longitude)
         if dist <= radius_km:
             trust = derive_trust_score(risk_val)
-            is_anom = alert_id is not None or (risk_val is not None and risk_val >= 0.40)
+            is_anom = alert_id is not None or (
+                risk_val is not None and risk_val >= 0.40
+            )
             reasons = [alert_reason] if (alert_reason and is_anom) else []
             if is_anom:
                 anomalous_count += 1
@@ -2783,7 +2812,9 @@ async def get_airspace_correlation(
                     altitude_m=round(s.altitude_m, 0),
                     velocity_ms=round(s.velocity_ms, 1),
                     trust_score=trust,
-                    combined_risk_score=round(risk_val, 4) if risk_val is not None else None,
+                    combined_risk_score=(
+                        round(risk_val, 4) if risk_val is not None else None
+                    ),
                     is_anomaly=is_anom,
                     anomaly_reasons=reasons,
                 )
@@ -2794,7 +2825,9 @@ async def get_airspace_correlation(
     # Classification
     if len(nearby) == 0:
         classification = "ISOLATED_NOMINAL"
-        summary = f"No other aircraft within {radius_km:.0f} km radius in active time window."
+        summary = (
+            f"No other aircraft within {radius_km:.0f} km radius in active time window."
+        )
     elif anomalous_count >= 3:
         classification = "AIRSPACE_WIDE_ANOMALY_PATTERN"
         summary = f"Airspace-wide anomaly pattern: {anomalous_count} of {len(nearby)} nearby aircraft exhibit concurrent telemetry anomalies."
@@ -2885,7 +2918,9 @@ async def get_airspace_risk_grid(
         ac_cnt = data["aircraft"]
         anom_cnt = data["anomalies"]
         avg_risk = round(data["risk_sum"] / ac_cnt, 4) if ac_cnt > 0 else 0.0
-        density = round((anom_cnt / ac_cnt) * (avg_risk + 0.1), 4) if ac_cnt > 0 else 0.0
+        density = (
+            round((anom_cnt / ac_cnt) * (avg_risk + 0.1), 4) if ac_cnt > 0 else 0.0
+        )
         max_density = max(max_density, density)
         cells.append(
             AirspaceRiskCell(
@@ -2925,28 +2960,40 @@ async def compare_aircraft(
     st_a = detail_a.live_state
     st_b = detail_b.live_state
 
-    sep_km = round(_distance_km(st_a.latitude, st_a.longitude, st_b.latitude, st_b.longitude), 1)
+    sep_km = round(
+        _distance_km(st_a.latitude, st_a.longitude, st_b.latitude, st_b.longitude), 1
+    )
     alt_diff = round(abs(st_a.altitude_m - st_b.altitude_m), 1)
     spd_diff = round(abs(st_a.velocity_ms - st_b.velocity_ms), 1)
 
     t_a = detail_a.trust_status.trust_score if detail_a.trust_status else None
     t_b = detail_b.trust_status.trust_score if detail_b.trust_status else None
-    trust_diff = round(abs(t_a - t_b), 1) if (t_a is not None and t_b is not None) else None
+    trust_diff = (
+        round(abs(t_a - t_b), 1) if (t_a is not None and t_b is not None) else None
+    )
 
     r_a = detail_a.trust_status.combined_risk_score if detail_a.trust_status else None
     r_b = detail_b.trust_status.combined_risk_score if detail_b.trust_status else None
-    risk_diff = round(abs(r_a - r_b), 4) if (r_a is not None and r_b is not None) else None
+    risk_diff = (
+        round(abs(r_a - r_b), 4) if (r_a is not None and r_b is not None) else None
+    )
 
     findings = []
     if sep_km < 50.0:
-        findings.append(f"High spatial proximity ({sep_km} km separation) — in same local airspace sector.")
+        findings.append(
+            f"High spatial proximity ({sep_km} km separation) — in same local airspace sector."
+        )
     else:
         findings.append(f"Divergent geographic sectors ({sep_km} km separation).")
 
     if trust_diff is not None and trust_diff >= 30.0:
-        findings.append(f"Significant telemetry trust divergence (Δ {trust_diff}%). Suggests aircraft-specific anomaly.")
+        findings.append(
+            f"Significant telemetry trust divergence (Δ {trust_diff}%). Suggests aircraft-specific anomaly."
+        )
     elif trust_diff is not None and trust_diff < 10.0 and (t_a or 100) < 70:
-        findings.append("Both aircraft exhibit correlated low trust scores. Suggests environmental or ground station sector factor.")
+        findings.append(
+            "Both aircraft exhibit correlated low trust scores. Suggests environmental or ground station sector factor."
+        )
 
     return AircraftComparisonResponse(
         aircraft_a=detail_a,
@@ -3051,7 +3098,9 @@ async def get_watchlist(
             score_data = det_svc.get_latest_score(item.icao24) if det_svc else None
             if score_data:
                 risk_val = score_data.get("combined_risk_score")
-                trust_val = score_data.get("trust_score") or derive_trust_score(risk_val)
+                trust_val = score_data.get("trust_score") or derive_trust_score(
+                    risk_val
+                )
             else:
                 ass_res = await db.execute(
                     select(AircraftAssessment)
@@ -3112,7 +3161,9 @@ async def add_to_watchlist(
         )
     )
     if exists.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Aircraft is already on your watchlist")
+        raise HTTPException(
+            status_code=409, detail="Aircraft is already on your watchlist"
+        )
 
     item = WatchlistItem(
         user_id=current_user.id,
@@ -3167,7 +3218,9 @@ async def remove_from_watchlist(
     )
     item = result.scalar_one_or_none()
     if not item:
-        raise HTTPException(status_code=404, detail="Aircraft not found on your watchlist")
+        raise HTTPException(
+            status_code=404, detail="Aircraft not found on your watchlist"
+        )
 
     await db.delete(item)
     await db.commit()
@@ -3259,7 +3312,8 @@ async def get_source_health_detail(
     upstream_status = str(SYSTEM_STATS.get("upstream_status", "UNKNOWN"))
 
     return SourceHealthDetailResponse(
-        source_name=SYSTEM_STATS.get("source_name") or "OpenSky Network (Authenticated)",
+        source_name=SYSTEM_STATS.get("source_name")
+        or "OpenSky Network (Authenticated)",
         connection_status="CONNECTED" if upstream_status == "LIVE" else upstream_status,
         last_successful_update=last_update,
         snapshot_age_seconds=round(age, 1) if age is not None else None,
@@ -3274,7 +3328,11 @@ async def get_source_health_detail(
             int(SYSTEM_STATS.get("last_poll_records") or 0)
             - int(SYSTEM_STATS.get("last_normalized_records") or 0),
         ),
-        current_freshness="LIVE" if (age and age <= 30) else ("STALE" if (age and age <= 120) else "OFFLINE"),
+        current_freshness=(
+            "LIVE"
+            if (age and age <= 30)
+            else ("STALE" if (age and age <= 120) else "OFFLINE")
+        ),
         refresh_in_progress=bool(SYSTEM_STATS.get("refresh_in_progress", False)),
         manual_refresh_pending=bool(SYSTEM_STATS.get("manual_refresh_pending", False)),
         provider_type="OpenSky State-Vector Data",
@@ -3295,7 +3353,14 @@ async def get_data_quality_metrics(
     rejected = max(0, total_rec - total_norm)
 
     # Compute quality score
-    q_score = round(min(100.0, max(0.0, (total_norm / total_rec * 100.0))) if total_rec > 0 else 98.5, 1)
+    q_score = round(
+        (
+            min(100.0, max(0.0, (total_norm / total_rec * 100.0)))
+            if total_rec > 0
+            else 98.5
+        ),
+        1,
+    )
 
     return DataQualityResponse(
         total_received_vectors=total_rec,
@@ -3334,7 +3399,11 @@ async def get_models_metadata(
             "version": "v1.4.0",
             "tier": 2,
             "type": "PyTorch 5-layer Bottleneck Neural Network",
-            "metrics": {"latent_dimension": 3, "loss": "L2 Reconstruction Loss", "latency_ms": 0.42},
+            "metrics": {
+                "latent_dimension": 3,
+                "loss": "L2 Reconstruction Loss",
+                "latency_ms": 0.42,
+            },
             "description": "Unsupervised reconstruction residual analysis over speed variance, heading variance, climb rate, and poll intervals.",
         },
         {
@@ -3342,7 +3411,12 @@ async def get_models_metadata(
             "version": "v2.0.0",
             "tier": 3,
             "type": "VotingClassifier (Random Forest + Gradient Boosting)",
-            "metrics": {"precision": 1.0, "recall": 1.0, "f1_score": 1.0, "latency_ms": 0.85},
+            "metrics": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "latency_ms": 0.85,
+            },
             "description": "Probabilistic binary spoofing classifier backed by TreeSHAP feature contribution attribution.",
         },
         {
@@ -3463,7 +3537,9 @@ async def generate_investigation_dossier_pdf(
     """Generate a comprehensive ReportLab PDF forensic investigation dossier for a specific aircraft."""
     detail = await get_aircraft_detail(request, icao24, db, current_user)
     narrative = await get_aircraft_narrative(request, icao24, 30, db, current_user)
-    correlation = await get_airspace_correlation(request, icao24, 150.0, 30, db, current_user)
+    correlation = await get_airspace_correlation(
+        request, icao24, 150.0, 30, db, current_user
+    )
 
     clean_icao = icao24.upper().strip()
     callsign = detail.callsign or "UNKNOWN"
@@ -3510,13 +3586,17 @@ async def generate_investigation_dossier_pdf(
         textColor=colors.HexColor("#334155"),
     )
 
-    bold_body = ParagraphStyle("DossierBold", parent=body_style, fontName="Helvetica-Bold")
+    bold_body = ParagraphStyle(
+        "DossierBold", parent=body_style, fontName="Helvetica-Bold"
+    )
 
     story = []
 
     # Header
-    case_num = f"AIRGUARD-INV-{clean_icao}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M')}"
-    story.append(Paragraph(f"AIRGUARD // FORENSIC INVESTIGATION DOSSIER", title_style))
+    case_num = (
+        f"AIRGUARD-INV-{clean_icao}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M')}"
+    )
+    story.append(Paragraph("AIRGUARD // FORENSIC INVESTIGATION DOSSIER", title_style))
     story.append(
         Paragraph(
             f"<b>Case ID:</b> {case_num} &nbsp;|&nbsp; <b>Subject:</b> {callsign} ({clean_icao}) &nbsp;|&nbsp; <b>Generated:</b> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}",
@@ -3526,7 +3606,9 @@ async def generate_investigation_dossier_pdf(
     story.append(Spacer(1, 8))
 
     # 1. Target Telemetry & Identity Summary
-    story.append(Paragraph("1. Subject Aircraft Identity & Live Kinematic Vector", h2_style))
+    story.append(
+        Paragraph("1. Subject Aircraft Identity & Live Kinematic Vector", h2_style)
+    )
     t_st = detail.live_state
     t_stat = detail.trust_status
     t_trust = t_stat.trust_score if t_stat else None
@@ -3534,71 +3616,143 @@ async def generate_investigation_dossier_pdf(
     tech = t_stat.technical_details if t_stat else {}
 
     meta_table = [
-        [Paragraph("ICAO 24-bit Address", bold_body), Paragraph(clean_icao, body_style), Paragraph("Callsign / Flight", bold_body), Paragraph(callsign, body_style)],
-        [Paragraph("Coordinates", bold_body), Paragraph(f"{t_st.latitude:.4f}°, {t_st.longitude:.4f}°", body_style), Paragraph("Altitude", bold_body), Paragraph(f"{t_st.altitude_m * 3.28084:.0f} ft ({t_st.altitude_m:.0f} m)", body_style)],
-        [Paragraph("Ground Speed", bold_body), Paragraph(f"{t_st.velocity_ms * 1.94384:.0f} kts ({t_st.velocity_ms:.0f} m/s)", body_style), Paragraph("Track Heading", bold_body), Paragraph(f"{t_st.heading_deg:.1f}°", body_style)],
-        [Paragraph("Vertical Rate", bold_body), Paragraph(f"{t_st.vertical_rate_ms * 196.85:+.0f} ft/min", body_style), Paragraph("Squawk Code", bold_body), Paragraph(str(t_st.squawk or "N/A"), body_style)],
-        [Paragraph("Telemetry Trust Index", bold_body), Paragraph(f"<b>{t_trust if t_trust is not None else 'Unassessed'}%</b>", body_style), Paragraph("Combined Detector Risk", bold_body), Paragraph(f"<b>{t_risk:.4f}</b>" if t_risk is not None else "N/A", body_style)],
-        [Paragraph("Telemetry Trust State", bold_body), Paragraph(str(tech.get("telemetry_trust_state", "UNASSESSED")), body_style), Paragraph("Ingestion Source", bold_body), Paragraph(str(t_st.source), body_style)],
+        [
+            Paragraph("ICAO 24-bit Address", bold_body),
+            Paragraph(clean_icao, body_style),
+            Paragraph("Callsign / Flight", bold_body),
+            Paragraph(callsign, body_style),
+        ],
+        [
+            Paragraph("Coordinates", bold_body),
+            Paragraph(f"{t_st.latitude:.4f}°, {t_st.longitude:.4f}°", body_style),
+            Paragraph("Altitude", bold_body),
+            Paragraph(
+                f"{t_st.altitude_m * 3.28084:.0f} ft ({t_st.altitude_m:.0f} m)",
+                body_style,
+            ),
+        ],
+        [
+            Paragraph("Ground Speed", bold_body),
+            Paragraph(
+                f"{t_st.velocity_ms * 1.94384:.0f} kts ({t_st.velocity_ms:.0f} m/s)",
+                body_style,
+            ),
+            Paragraph("Track Heading", bold_body),
+            Paragraph(f"{t_st.heading_deg:.1f}°", body_style),
+        ],
+        [
+            Paragraph("Vertical Rate", bold_body),
+            Paragraph(f"{t_st.vertical_rate_ms * 196.85:+.0f} ft/min", body_style),
+            Paragraph("Squawk Code", bold_body),
+            Paragraph(str(t_st.squawk or "N/A"), body_style),
+        ],
+        [
+            Paragraph("Telemetry Trust Index", bold_body),
+            Paragraph(
+                f"<b>{t_trust if t_trust is not None else 'Unassessed'}%</b>",
+                body_style,
+            ),
+            Paragraph("Combined Detector Risk", bold_body),
+            Paragraph(
+                f"<b>{t_risk:.4f}</b>" if t_risk is not None else "N/A", body_style
+            ),
+        ],
+        [
+            Paragraph("Telemetry Trust State", bold_body),
+            Paragraph(str(tech.get("telemetry_trust_state", "UNASSESSED")), body_style),
+            Paragraph("Ingestion Source", bold_body),
+            Paragraph(str(t_st.source), body_style),
+        ],
     ]
     t1 = Table(meta_table, colWidths=[120, 150, 120, 150])
     t1.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-            ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
-            ("TOPPADDING", (0, 0), (-1, -1), 4),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-        ])
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
+                ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
     )
     story.append(t1)
     story.append(Spacer(1, 8))
 
     # 2. Detector Agreement Matrix
-    story.append(Paragraph("2. 4-Tier Detector Agreement Matrix & Integrity Checks", h2_style))
+    story.append(
+        Paragraph("2. 4-Tier Detector Agreement Matrix & Integrity Checks", h2_style)
+    )
     dag = tech.get("detector_agreement", {}) if isinstance(tech, dict) else {}
     dag_layers = dag.get("layers", {}) if isinstance(dag, dict) else {}
-    
-    dag_rows = [[Paragraph("Detector Tier", bold_body), Paragraph("Status", bold_body), Paragraph("Diagnostic Detail", bold_body)]]
+
+    dag_rows = [
+        [
+            Paragraph("Detector Tier", bold_body),
+            Paragraph("Status", bold_body),
+            Paragraph("Diagnostic Detail", bold_body),
+        ]
+    ]
     for k, layer in dag_layers.items():
         st_val = layer.get("status", "N/A")
-        dag_rows.append([
-            Paragraph(layer.get("label", k), body_style),
-            Paragraph(f"<b>{st_val}</b>", body_style),
-            Paragraph(layer.get("details", "-"), body_style),
-        ])
+        dag_rows.append(
+            [
+                Paragraph(layer.get("label", k), body_style),
+                Paragraph(f"<b>{st_val}</b>", body_style),
+                Paragraph(layer.get("details", "-"), body_style),
+            ]
+        )
     t2 = Table(dag_rows, colWidths=[160, 90, 290])
     t2.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e2e8f0")),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-            ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
-            ("TOPPADDING", (0, 0), (-1, -1), 3),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-        ])
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e2e8f0")),
+                ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ]
+        )
     )
     story.append(t2)
-    story.append(Paragraph(f"<b>Agreement Summary:</b> <i>{dag.get('agreement_summary', 'Evaluated')}</i>", body_style))
+    story.append(
+        Paragraph(
+            f"<b>Agreement Summary:</b> <i>{dag.get('agreement_summary', 'Evaluated')}</i>",
+            body_style,
+        )
+    )
     story.append(Spacer(1, 8))
 
     # 3. Chronological Narrative
-    story.append(Paragraph("3. Chronological Investigation Timeline Narrative", h2_style))
-    narr_rows = [[Paragraph("Time (UTC)", bold_body), Paragraph("Category", bold_body), Paragraph("Event Narrative", bold_body)]]
+    story.append(
+        Paragraph("3. Chronological Investigation Timeline Narrative", h2_style)
+    )
+    narr_rows = [
+        [
+            Paragraph("Time (UTC)", bold_body),
+            Paragraph("Category", bold_body),
+            Paragraph("Event Narrative", bold_body),
+        ]
+    ]
     for ev in narrative.events[:8]:
-        narr_rows.append([
-            Paragraph(ev.timestamp.strftime("%H:%M:%S"), body_style),
-            Paragraph(ev.category, body_style),
-            Paragraph(f"<b>{ev.title}</b> — {ev.description}", body_style),
-        ])
+        narr_rows.append(
+            [
+                Paragraph(ev.timestamp.strftime("%H:%M:%S"), body_style),
+                Paragraph(ev.category, body_style),
+                Paragraph(f"<b>{ev.title}</b> — {ev.description}", body_style),
+            ]
+        )
     t3 = Table(narr_rows, colWidths=[65, 75, 400])
     t3.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e2e8f0")),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-            ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
-            ("TOPPADDING", (0, 0), (-1, -1), 3),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-        ])
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e2e8f0")),
+                ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ]
+        )
     )
     story.append(t3)
     story.append(Spacer(1, 8))
@@ -3617,21 +3771,40 @@ async def generate_investigation_dossier_pdf(
     story.append(Spacer(1, 8))
 
     # 5. Assessment Signature Block
-    story.append(Paragraph("5. Formal Intelligence Assessment Classification", h2_style))
+    story.append(
+        Paragraph("5. Formal Intelligence Assessment Classification", h2_style)
+    )
     sig_data = [
-        [Paragraph("<b>Automated Pipeline Assessment:</b>", bold_body), Paragraph(f"Telemetry Trust: {t_trust if t_trust is not None else 'Unassessed'}% ({tech.get('telemetry_trust_state', 'NOMINAL')})", body_style)],
-        [Paragraph("<b>Analyst Disposition:</b>", bold_body), Paragraph("PENDING ANALYST REVIEW & SIGN-OFF", body_style)],
-        [Paragraph("<b>Investigation Disclaimer:</b>", bold_body), Paragraph("AirGuard assessments evaluate telemetry signal integrity. This document does not constitute a certified airworthiness finding or official ATC crash investigation verdict.", body_style)],
+        [
+            Paragraph("<b>Automated Pipeline Assessment:</b>", bold_body),
+            Paragraph(
+                f"Telemetry Trust: {t_trust if t_trust is not None else 'Unassessed'}% ({tech.get('telemetry_trust_state', 'NOMINAL')})",
+                body_style,
+            ),
+        ],
+        [
+            Paragraph("<b>Analyst Disposition:</b>", bold_body),
+            Paragraph("PENDING ANALYST REVIEW & SIGN-OFF", body_style),
+        ],
+        [
+            Paragraph("<b>Investigation Disclaimer:</b>", bold_body),
+            Paragraph(
+                "AirGuard assessments evaluate telemetry signal integrity. This document does not constitute a certified airworthiness finding or official ATC crash investigation verdict.",
+                body_style,
+            ),
+        ],
     ]
     t4 = Table(sig_data, colWidths=[180, 360])
     t4.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-            ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
-            ("TOPPADDING", (0, 0), (-1, -1), 4),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-        ])
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
+                ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#94a3b8")),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
     )
     story.append(t4)
 
@@ -3645,4 +3818,3 @@ async def generate_investigation_dossier_pdf(
             "Content-Disposition": f"attachment;filename=airguard_dossier_{clean_icao}.pdf"
         },
     )
-

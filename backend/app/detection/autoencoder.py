@@ -163,7 +163,9 @@ def compute_evidence_confidence(
     if autoencoder_score is not None:
         available_weight += 0.30
     else:
-        unavailable_reasons.append("Autoencoder history accumulating (< 5 observations)")
+        unavailable_reasons.append(
+            "Autoencoder history accumulating (< 5 observations)"
+        )
 
     if trilateration_consistency is not None:
         pass

@@ -84,7 +84,9 @@ class Alert(Base):
     # Relationships
     aircraft_state: Mapped["AircraftState"] = relationship(back_populates="alerts")
     transitions: Mapped[list["AlertTransition"]] = relationship(
-        back_populates="alert", cascade="all, delete-orphan", order_by="AlertTransition.created_at"
+        back_populates="alert",
+        cascade="all, delete-orphan",
+        order_by="AlertTransition.created_at",
     )
 
 
@@ -292,7 +294,10 @@ class AlertTransition(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     alert_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("alerts.id", ondelete="CASCADE"), nullable=False, index=True
+        BigInteger,
+        ForeignKey("alerts.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     user_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
@@ -317,7 +322,10 @@ class WatchlistItem(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        BigInteger,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     icao24: Mapped[str] = mapped_column(String(6), nullable=False, index=True)
     callsign: Mapped[str | None] = mapped_column(String(10), nullable=True)
@@ -354,4 +362,3 @@ class AnalystNote(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
-

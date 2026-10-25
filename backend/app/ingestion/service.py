@@ -860,7 +860,9 @@ class OpenSkyIngestionService:
                         score_pipe.hset("airguard:latest_scores", k, v)
                     await score_pipe.execute()
                 except Exception as score_err:
-                    logger.debug("Could not write latest_scores to Redis: %s", score_err)
+                    logger.debug(
+                        "Could not write latest_scores to Redis: %s", score_err
+                    )
 
         # Batch stream writes so a global snapshot does not require one Redis
         # network round trip per aircraft. Transactional chunks make the
